@@ -13,10 +13,15 @@ import attendence.bll.PersonManager;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,6 +42,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import java.time.temporal.ChronoUnit;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TableRow;
 
 /**
  * The controller for the teacher view.
@@ -53,7 +61,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private final ObservableList<Student> allStudents;
     private ObservableList<Student> searchedStudents;
     private final List<Absence> absence;
-
+    private Student selectedStudent;
 
     @FXML
     private Label lblUsername;
@@ -79,7 +87,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private DatePicker dateFirstDate;
     @FXML
     private DatePicker dateSecondDate;
-    
+
     LocalDate firstDate;
     LocalDate secondDate;
 
@@ -114,38 +122,42 @@ public class TeacherViewController extends Dragable implements Initializable
         updateDateInfo();
         search();
         setLogo();
-        
 
     }
 
-       public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException {
+    public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException
+    {
         absence.clear();
         absence.addAll(manager.getAllAbsence(startDate, endDate));
-        for (Absence abs : absence) {
-                System.out.println(abs.getDate().toString());
-            }
+        for (Absence abs : absence)
+        {
+            System.out.println(abs.getDate().toString());
+        }
     }
 
     @FXML
-    public void handleFirstDate() throws SQLException {
+    public void handleFirstDate() throws SQLException
+    {
         firstDate = dateFirstDate.getValue();
-        if (dateSecondDate.getValue() != null) {
+        if (dateSecondDate.getValue() != null)
+        {
             getAllAbsence(firstDate, secondDate);
-            
+
         }
 
     }
 
     @FXML
-    public void handleSecondDate() throws SQLException {
+    public void handleSecondDate() throws SQLException
+    {
         secondDate = dateSecondDate.getValue();
-        if (dateFirstDate.getValue() != null) {
+        if (dateFirstDate.getValue() != null)
+        {
             getAllAbsence(firstDate, secondDate);
         }
 
     }
-    
-    
+
     @FXML
     private void closeWindow(MouseEvent event)
     {
@@ -183,10 +195,10 @@ public class TeacherViewController extends Dragable implements Initializable
     private void search()
     {
         txtSearch.textProperty().addListener((ObservableValue<? extends String> listener, String oldQuery, String newQuery)
-                -> 
-                {
-                    searchedStudents.setAll(model.search(studentList, newQuery));
-                    tblStudentAbs.setItems(searchedStudents);
+                ->
+        {
+            searchedStudents.setAll(model.search(studentList, newQuery));
+            tblStudentAbs.setItems(searchedStudents);
         });
     }
 
@@ -206,6 +218,7 @@ public class TeacherViewController extends Dragable implements Initializable
 
     private void addCheckBoxes()
     {
+
         colAbsence.setCellValueFactory(
                 new Callback<CellDataFeatures<Student, Boolean>, ObservableValue<Boolean>>()
         {
@@ -218,5 +231,47 @@ public class TeacherViewController extends Dragable implements Initializable
         });
 
         colAbsence.setCellFactory(CheckBoxTableCell.forTableColumn(colAbsence));
+    }
+
+    @FXML
+    private void changeStudentAbsence()
+    {
+        selectedStudent = tblStudentAbs.getSelectionModel().getSelectedItem();
+
+        if (selectedStudent.isRegistered())
+        {
+
+            selectedStudent.setLastCheckOut(Timestamp.from(Instant.now()));
+            selectedStudent.setLastCheckIn(null);
+            selectedStudent.setRegistered(false);
+            updateCheckInAndOut();
+        } else
+
+        {
+            if (selectedStudent.getLastCheckOut() == null)
+            {
+                selectedStudent.setLastCheckOut(Timestamp.from(Instant.now().minusSeconds(1)));
+
+                updateCheckInAndOut();
+            }
+            selectedStudent.setLastCheckIn(Timestamp.from(Instant.now()));
+            selectedStudent.setRegistered(true);
+
+            updateCheckInAndOut();
+        }
+    }
+
+    private void updateCheckInAndOut()
+    {
+        try
+        {
+            manager.updateCheckIn(selectedStudent);
+            manager.updateCheckOut(selectedStudent);
+        } catch (SQLException ex)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Connection to database lost");
+                    
+        }
     }
 }
