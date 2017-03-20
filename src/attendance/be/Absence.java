@@ -91,4 +91,16 @@ public class Absence
         this.studentId = studentId;
     }
 
+    public void setLectureId(int lectureId)
+    {
+        this.lectureId = lectureId;
+    }
+
+    public int getLectureId()
+    {
+        return lectureId;
+    }
+    
+    
+
 }
