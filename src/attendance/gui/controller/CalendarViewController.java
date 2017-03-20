@@ -6,10 +6,13 @@
 package attendance.gui.controller;
 
 import attendance.be.Absence;
+import attendance.be.Lecture;
 import attendance.be.Semester;
 import attendance.gui.model.StudentModel;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -20,9 +23,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.control.Tooltip;
 
 /**
  * FXML Controller class
@@ -36,12 +41,12 @@ public class CalendarViewController implements Initializable
     private int year;
     private int month;
     private final String todayStyle;
-
     private final String absentStyle;
     private final String attendetStyle;
     private final StudentModel model;
-    private ObservableList<String> months;
-    private ObservableList<Integer> years;
+    private final ObservableList<String> months;
+    private final ObservableList<Integer> years;
+    private final String[] DifferentClasses;
 
     @FXML
     private GridPane gridCalendar;
@@ -52,6 +57,10 @@ public class CalendarViewController implements Initializable
 
     public CalendarViewController()
     {
+        this.DifferentClasses = new String[]
+        {
+            "SDE", "SCO", "ITO", "DBOS"
+        };
         this.attendetStyle = "-fx-background-color: lightgreen";
         this.absentStyle = "-fx-background-color: #FF0033";
         this.todayStyle = "-fx-border-color: red;";
@@ -80,6 +89,7 @@ public class CalendarViewController implements Initializable
                 year - 3,
                 year - 4
         );
+
     }
 
     /**
@@ -138,22 +148,23 @@ public class CalendarViewController implements Initializable
 
             if (gridX <= 4)
             {
-                Button btn = new Button(i + "");
-                btn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                Label label = new Label(i + "");
+                label.setAlignment(Pos.CENTER);
+                label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 Calendar tempCal = Calendar.getInstance();
                 if (i == tempCal.get(Calendar.DATE) && month == tempCal.get(Calendar.MONTH) && year == tempCal.get(Calendar.YEAR))
                 {
-                    btn.setStyle(todayStyle);
+                    label.setStyle(todayStyle);
                 }
                 if (month < tempCal.get(Calendar.MONTH) || i < tempCal.get(Calendar.DATE) && month == tempCal.get(Calendar.MONTH) || year < tempCal.get(Calendar.YEAR))
                 {
 
                     if (cal.getTime().after(firstSemester))
                     {
-                        checkIfAbsent(i, btn);
+                        checkIfAbsent(i, label);
                     }
                 }
-                gridCalendar.add(btn, gridX, gridY);
+                gridCalendar.add(label, gridX, gridY);
             }
 
             // Next row and back to the first column after sunday
@@ -169,25 +180,44 @@ public class CalendarViewController implements Initializable
         }
     }
 
-    private void checkIfAbsent(int i, Button btn)
+    private void checkIfAbsent(int i, Label label)
     {
         List<Absence> missedClasses = model.getMissedClasses();
-        if(missedClasses.isEmpty())
+        List<Lecture> missedLectures = model.getLectures();
+        List<String> classNames = new ArrayList<>();;
+
+        if (missedClasses.isEmpty())
         {
-            btn.setStyle(attendetStyle);
+            label.setStyle(attendetStyle);
+
         }
-        for (Absence missedClass : missedClasses)
+        else
         {
-            Calendar missCal = Calendar.getInstance();
-            missCal.setTime(missedClass.getDate());
-            if (missCal.get(Calendar.DATE) == i && month == missCal.get(Calendar.MONTH) && year == missCal.get(Calendar.YEAR))
+            boolean isAbsent = false;
+            for (Absence missedClass : missedClasses)
             {
-                btn.setStyle(absentStyle);
-                return;
-            }
-            else
-            {
-                btn.setStyle(attendetStyle);
+                String stringToPrint;
+                Calendar missCal = Calendar.getInstance();
+                missCal.setTime(missedClass.getDate());
+                if (missCal.get(Calendar.DATE) == i && month == missCal.get(Calendar.MONTH) && year == missCal.get(Calendar.YEAR))
+                {
+                    label.setStyle(absentStyle);
+                    for (Lecture lecture : missedLectures)
+                    {
+                        if (lecture.getId() == missedClass.getLectureId())
+                        {
+                            classNames.add(lecture.getLectureName());
+                        }
+                    }
+                    stringToPrint = getAmountOfAbsencePerClass(classNames);
+
+                    Tooltip.install(label, new Tooltip(stringToPrint));
+                    isAbsent = true;
+                }
+                else if (!isAbsent)
+                {
+                    label.setStyle(attendetStyle);
+                }
             }
         }
     }
@@ -212,5 +242,19 @@ public class CalendarViewController implements Initializable
             }
         }
         fillCalendar();
+    }
+
+    private String getAmountOfAbsencePerClass(List<String> classNames)
+    {
+        String stringToPrint = "";
+
+        for (String name : DifferentClasses)
+        {
+            if (Collections.frequency(classNames, name) != 0)
+            {
+                stringToPrint += name + " (" + Collections.frequency(classNames, name) + ")\n";
+            }
+        }
+        return stringToPrint;
     }
 }
