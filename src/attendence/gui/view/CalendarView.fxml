@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="69.0" prefWidth="204.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendence.gui.controller.CalendarViewController">
+    <children>
+      <GridPane fx:id="gridCalendar" gridLinesVisible="true" layoutX="4.0" layoutY="96.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="40.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="40.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="40.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="40.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="40.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints vgrow="SOMETIMES" />
+          <RowConstraints vgrow="SOMETIMES" />
+          <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Mon" />
+            <Label text="Tue" GridPane.columnIndex="1" />
+            <Label text="Wed" GridPane.columnIndex="2" />
+            <Label text="Thu" GridPane.columnIndex="3" />
+            <Label text="Fri" GridPane.columnIndex="4" />
+         </children>
+      </GridPane>
+      <ComboBox fx:id="cmbYear" layoutX="106.0" layoutY="55.0" onAction="#changeYear" prefHeight="25.0" prefWidth="84.0" />
+      <ComboBox fx:id="cmbMonth" layoutX="14.0" layoutY="55.0" onAction="#changeMonth" prefHeight="25.0" prefWidth="84.0" />
+   </children>
+</AnchorPane>

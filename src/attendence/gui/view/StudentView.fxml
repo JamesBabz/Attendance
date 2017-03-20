@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<SplitPane dividerPositions="0.3817891373801917" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#drag" onMousePressed="#setOffset" prefHeight="354.0" prefWidth="604.0" styleClass="split-pane *.split-pane-divider" stylesheets="@css/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendence.gui.controller.StudentViewController">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="506.0" prefWidth="196.0" styleClass="background">
+         <children>
+            <Label layoutX="14.0" layoutY="128.0" text="Missed Classes" />
+            <Button fx:id="btnCheckIn" layoutX="14.0" layoutY="70.0" mnemonicParsing="false" onAction="#handleCheckIn" prefHeight="39.0" prefWidth="118.0" style="-fx-background-color: lightgreen;" text="Check-in">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <HBox fx:id="calendarContainer" layoutX="14.0" layoutY="97.0" prefHeight="235.0" prefWidth="304.0">
+               <children>
+               <fx:include source="CalendarView.fxml" />
+               </children>
+            </HBox>
+            <ImageView fx:id="imageLogo" fitHeight="49.0" fitWidth="139.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+         </children>
+    </AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="461.0" prefWidth="665.0" styleClass="background">
+         <children>
+            <Label layoutY="20.0" text="Welcome">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label fx:id="lblUser" layoutY="41.0" text="Label">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+            <PieChart fx:id="absenceChart" layoutX="14.0" layoutY="77.0" prefHeight="269.0" prefWidth="344.0" />
+            <Button fx:id="closeButton" layoutX="351.0" layoutY="15.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="4.0" prefWidth="10.0" styleClass="roundbutton, buttonhoverred, closebuttoncolor" text="x" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+            <Label fx:id="labelProcent" />
+         </children></AnchorPane>
+  </items>
+</SplitPane>

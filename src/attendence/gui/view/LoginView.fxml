@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+
+<BorderPane fx:id="bp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="203.0" prefWidth="323.0" stylesheets="@css/Style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendence.gui.controller.LoginViewController">
+   <center>
+      <Pane onMouseDragged="#drag" onMousePressed="#setOffset" prefHeight="175.0" prefWidth="357.0" styleClass="background" stylesheets="@css/Style.css" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="txtUser" layoutX="59.0" layoutY="60.0" prefHeight="25.0" prefWidth="205.0" promptText="Username" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets left="20.0" right="20.0" />
+               </GridPane.margin>
+            </TextField>
+              <PasswordField fx:id="txtPass" layoutX="59.0" layoutY="94.0" prefHeight="25.0" prefWidth="205.0" promptText="Password" />
+            <Button defaultButton="true" layoutX="59.0" layoutY="157.0" mnemonicParsing="false" onAction="#handleLogin" prefHeight="25.0" prefWidth="205.0" styleClass="buttonhoverblue, buttoncolorblue" text="Login" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button fx:id="closeButton" layoutX="291.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="4.0" prefWidth="10.0" styleClass="roundbutton, buttonhoverred, closebuttoncolor" text="x" />
+            <CheckBox fx:id="checkBoxRemember" layoutX="60.0" layoutY="127.0" mnemonicParsing="false" text="Remember me" textFill="WHITE" />
+            <ImageView fx:id="imageLogo" fitHeight="41.0" fitWidth="121.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+          
+         </children>
+      </Pane>
+   </center>
+</BorderPane>

@@ -1,0 +1,62 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 09-02-2017, 11:30:46
+    Author     : Jacob Enemark
+*/
+
+.background 
+{
+    -fx-background-color: #b1d9f0;
+  
+}
+
+.listcells
+{
+   -fx-control-inner-background: #7ec0e7 ;
+  
+}
+
+.dropdownblue
+{
+    -fx-background-color: #7ec0e7;
+}
+
+.buttoncolorblue
+{
+      -fx-background-color: #2399d7; 
+}
+
+.buttonhoverblue:hover
+{
+    -fx-background-color: #078dd3; 
+ 
+}
+
+.closebuttoncolor
+{
+-fx-background-color: #f78080;    
+}
+
+.buttonhoverred:hover
+{
+    -fx-background-color: #e5350e;
+}
+
+.roundbutton
+{
+ 
+            -fx-background-radius: 50em; 
+            -fx-min-width: 15px; 
+            -fx-min-height: 15px; 
+            -fx-max-width: 15px;
+            -fx-max-height: 15px;
+}
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 0 0 0;
+}
+
