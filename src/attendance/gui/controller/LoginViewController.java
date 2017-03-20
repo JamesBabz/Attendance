@@ -3,18 +3,15 @@ package attendance.gui.controller;
 import attendance.be.Person;
 import attendance.be.Student;
 import attendance.be.Teacher;
-import attendance.bll.PersonManager;
 import attendance.gui.model.LoginModel;
 import attendance.gui.model.StudentModel;
 import attendance.gui.model.TeacherModel;
-import java.io.FileNotFoundException;
+import attendence.bll.PersonManager;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -140,7 +137,7 @@ public class LoginViewController extends Dragable implements Initializable
                 } else if (person instanceof Student)
                 {
                     studentModel.setCurrentUser((Student) person);
-                    studentModel.setMissedClasses(manager.getAllAbsence(person.getId()));
+                    studentModel.setMissedClasses(manager.getSingleStudentAbsence(person.getId()));
                 } else
                 {
                     return;
