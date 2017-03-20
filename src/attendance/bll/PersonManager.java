@@ -1,6 +1,7 @@
 package attendance.bll;
 
 import attendance.be.Absence;
+import attendance.be.Lecture;
 import attendance.be.Person;
 import attendance.be.Student;
 import attendance.be.Teacher;
@@ -72,6 +73,10 @@ public class PersonManager {
 
     public void updateCheckOut(Student student) throws SQLException {
         dbManager.updateCheckOut(student);
+    }
+    
+    public List<Lecture> getAllLectures(){
+        return dbManager.getAllLectures();
     }
 
 }

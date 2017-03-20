@@ -138,6 +138,7 @@ public class LoginViewController extends Dragable implements Initializable
                 {
                     studentModel.setCurrentUser((Student) person);
                     studentModel.setMissedClasses(manager.getSingleStudentAbsence(person.getId()));
+                    studentModel.setLectures(manager.getAllLectures());
                 } else
                 {
                     return;
