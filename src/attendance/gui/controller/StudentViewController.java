@@ -5,9 +5,9 @@
  */
 package attendance.gui.controller;
 
-import attendance.bll.PersonManager;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.StudentModel;
+import attendence.bll.PersonManager;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -22,7 +22,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

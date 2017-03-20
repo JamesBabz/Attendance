@@ -5,13 +5,16 @@
  */
 package attendance.gui.controller;
 
+import attendance.be.Absence;
 import attendance.be.Student;
-import attendance.bll.PersonManager;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.TeacherModel;
+import attendence.bll.PersonManager;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
@@ -49,6 +52,8 @@ public class TeacherViewController extends Dragable implements Initializable
     private final List<Student> studentList;
     private final ObservableList<Student> allStudents;
     private ObservableList<Student> searchedStudents;
+    private final List<Absence> absence;
+
 
     @FXML
     private Label lblUsername;
@@ -74,6 +79,9 @@ public class TeacherViewController extends Dragable implements Initializable
     private DatePicker dateFirstDate;
     @FXML
     private DatePicker dateSecondDate;
+    
+    LocalDate firstDate;
+    LocalDate secondDate;
 
     /**
      * The default constructor for the TeacherViewController.
@@ -87,6 +95,7 @@ public class TeacherViewController extends Dragable implements Initializable
         this.model = TeacherModel.getInstance();
         dateTimeModel = new DateTimeModel();
         allStudents.addAll(studentList);
+        absence = new ArrayList<>();
     }
 
     /**
@@ -105,9 +114,38 @@ public class TeacherViewController extends Dragable implements Initializable
         updateDateInfo();
         search();
         setLogo();
+        
 
     }
 
+       public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException {
+        absence.clear();
+        absence.addAll(manager.getAllAbsence(startDate, endDate));
+        for (Absence abs : absence) {
+                System.out.println(abs.getDate().toString());
+            }
+    }
+
+    @FXML
+    public void handleFirstDate() throws SQLException {
+        firstDate = dateFirstDate.getValue();
+        if (dateSecondDate.getValue() != null) {
+            getAllAbsence(firstDate, secondDate);
+            
+        }
+
+    }
+
+    @FXML
+    public void handleSecondDate() throws SQLException {
+        secondDate = dateSecondDate.getValue();
+        if (dateFirstDate.getValue() != null) {
+            getAllAbsence(firstDate, secondDate);
+        }
+
+    }
+    
+    
     @FXML
     private void closeWindow(MouseEvent event)
     {
