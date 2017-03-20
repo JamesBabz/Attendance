@@ -44,8 +44,9 @@ public class CalendarViewController implements Initializable
     private final String absentStyle;
     private final String attendetStyle;
     private final StudentModel model;
-    private ObservableList<String> months;
-    private ObservableList<Integer> years;
+    private final ObservableList<String> months;
+    private final ObservableList<Integer> years;
+    private final String[] DifferentClasses;
 
     @FXML
     private GridPane gridCalendar;
@@ -56,6 +57,10 @@ public class CalendarViewController implements Initializable
 
     public CalendarViewController()
     {
+        this.DifferentClasses = new String[]
+        {
+            "SDE", "SCO", "ITO", "DBOS"
+        };
         this.attendetStyle = "-fx-background-color: lightgreen";
         this.absentStyle = "-fx-background-color: #FF0033";
         this.todayStyle = "-fx-border-color: red;";
@@ -84,6 +89,7 @@ public class CalendarViewController implements Initializable
                 year - 3,
                 year - 4
         );
+
     }
 
     /**
@@ -242,17 +248,12 @@ public class CalendarViewController implements Initializable
     {
         String stringToPrint = "";
 
-        if (Collections.frequency(classNames, "SDE") != 0)
+        for (String name : DifferentClasses)
         {
-            stringToPrint += "SDE (" + Collections.frequency(classNames, "SDE") + ")\n";
-        }
-        if (Collections.frequency(classNames, "SCO") != 0)
-        {
-            stringToPrint += "SCO (" + Collections.frequency(classNames, "SCO") + ")\n";
-        }
-        if (Collections.frequency(classNames, "ITO") != 0)
-        {
-            stringToPrint += "ITO (" + Collections.frequency(classNames, "ITO") + ")\n";
+            if (Collections.frequency(classNames, name) != 0)
+            {
+                stringToPrint += name + " (" + Collections.frequency(classNames, name) + ")\n";
+            }
         }
         return stringToPrint;
     }
