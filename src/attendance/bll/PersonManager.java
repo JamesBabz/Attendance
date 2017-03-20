@@ -1,11 +1,11 @@
-package attendence.bll;
+package attendance.bll;
 
 import attendance.be.Absence;
 import attendance.be.Person;
 import attendance.be.Student;
 import attendance.be.Teacher;
 import attendance.dal.PersonDAO;
-import attendence.dal.DBManager;
+import attendance.dal.DBManager;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;

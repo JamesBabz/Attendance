@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package attendence.dal;
+package attendance.dal;
 
 import attendance.be.Absence;
 import attendance.be.Person;

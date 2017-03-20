@@ -9,7 +9,7 @@ import attendance.be.Absence;
 import attendance.be.Student;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.TeacherModel;
-import attendence.bll.PersonManager;
+import attendance.bll.PersonManager;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;

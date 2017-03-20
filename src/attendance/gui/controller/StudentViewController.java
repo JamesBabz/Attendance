@@ -7,7 +7,7 @@ package attendance.gui.controller;
 
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.StudentModel;
-import attendence.bll.PersonManager;
+import attendance.bll.PersonManager;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
