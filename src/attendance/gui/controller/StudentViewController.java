@@ -5,6 +5,8 @@
  */
 package attendance.gui.controller;
 
+import attendance.be.Absence;
+import attendance.be.Lecture;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.StudentModel;
 import attendance.bll.PersonManager;
@@ -13,7 +15,12 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -38,11 +45,10 @@ import javafx.stage.Stage;
 public class StudentViewController extends Dragable implements Initializable
 {
 
-    private final ObservableList data;
     private final StudentModel model;
     private final DateTimeModel dateTimeModel;
     private final PersonManager manager;
-//    private final List<Absence> absences;
+
 
     @FXML
     private Label lblUser;
@@ -53,8 +59,8 @@ public class StudentViewController extends Dragable implements Initializable
     @FXML
     private Button closeButton;
 
-   // @FXML
- //   private ComboBox<String> comboMonth;
+    // @FXML
+    //   private ComboBox<String> comboMonth;
     @FXML
     private Label labelProcent;
     @FXML
@@ -66,10 +72,10 @@ public class StudentViewController extends Dragable implements Initializable
     {
         this.manager = new PersonManager();
         this.model = StudentModel.getInstance();
-        this.data = FXCollections.observableArrayList();
 //        this.absences = manager.getAllAbsence(model.getCurrentUser().getId());
         this.dateTimeModel = new DateTimeModel();
-   
+
+
     }
 
     /**
@@ -79,10 +85,8 @@ public class StudentViewController extends Dragable implements Initializable
     public void initialize(URL url, ResourceBundle rb)
     {
         lblUser.setText(model.getCurrentUser().getFirstName() + " " + model.getCurrentUser().getLastName());
+        // comboMonth.setItems(dateTimeModel.getFormattedMonths());
 
-       // comboMonth.setItems(dateTimeModel.getFormattedMonths());
-
-        updateChart();
         if (model.getCurrentUser().getLastCheckIn() != null)
         {
             if (model.getCurrentUser().getLastCheckOut() != null)
@@ -91,13 +95,12 @@ public class StudentViewController extends Dragable implements Initializable
                 {
                     checkInStyle(false);
                 }
-            }
-            else
+            } else
             {
                 checkInStyle(false);
             }
         }
-             setLogo();
+        setLogo();
     }
 
     @FXML
@@ -113,8 +116,7 @@ public class StudentViewController extends Dragable implements Initializable
         {
             model.getCurrentUser().setLastCheckIn(Timestamp.valueOf(LocalDateTime.now()));
             manager.updateCheckIn(model.getCurrentUser());
-        }
-        else
+        } else
         {
             model.getCurrentUser().setLastCheckOut(Timestamp.valueOf(LocalDateTime.now()));
             manager.updateCheckOut(model.getCurrentUser());
@@ -131,8 +133,7 @@ public class StudentViewController extends Dragable implements Initializable
         {
             btnText = "Check-in";
             btnStyle = "-fx-background-color : LIGHTGREEN;";
-        }
-        else
+        } else
         {
             btnText = "Check-out";
             btnStyle = "-fx-background-color : #FF0033;";
@@ -167,47 +168,15 @@ public class StudentViewController extends Dragable implements Initializable
         return "Check-out".equals(btnCheckIn.getText());
     }
 
-    private void updateChart()
-    {
 
-        data.add(new PieChart.Data("ITO", 10));
-        data.add(new PieChart.Data("SDE", 5));
-        data.add(new PieChart.Data("SCO", 10));
-        data.add(new PieChart.Data("DB", 10));
-        data.add(new PieChart.Data("Attendance", 65));
-        absenceChart.setData(data);
 
-        absenceChart.setLabelLineLength(100);
-        absenceChart.setLegendSide(Side.LEFT);
-
-        labelProcent.setTextFill(Color.DARKORANGE);
-        labelProcent.setStyle("-fx-font: 24 arial;");
-        for (final PieChart.Data data : absenceChart.getData())
-        {
-            data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET,
-                    new EventHandler<MouseEvent>()
-            {
-                @Override
-                public void handle(MouseEvent e)
-                {
-                    labelProcent.setTranslateX(e.getSceneX() - 180);
-                    labelProcent.setTranslateY(e.getSceneY() - 25);
-
-                    labelProcent.setText(String.valueOf(data.getPieValue()) + "%");
-
-                }
-            });
-
-        }
-
-    }
-    
-      private void setLogo()
+    private void setLogo()
     {
         Image imageEasv = new Image("attendance/gui/view/images/easv.png");
         imageLogo.setImage(imageEasv);
         imageLogo.setFitHeight(80);
         imageLogo.setFitWidth(150);
     }
+
 
 }
