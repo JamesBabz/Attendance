@@ -34,7 +34,7 @@
                <font>
                   <Font size="14.0" />
                </font></Label>
-            <PieChart fx:id="absenceChart" layoutX="14.0" layoutY="77.0" prefHeight="269.0" prefWidth="344.0" />
+            <fx:include source="PieChartView.fxml" />
             <Button fx:id="closeButton" layoutX="351.0" layoutY="15.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="4.0" prefWidth="10.0" styleClass="roundbutton, buttonhoverred, closebuttoncolor" text="x" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
             <Label fx:id="labelProcent" />
          </children></AnchorPane>
