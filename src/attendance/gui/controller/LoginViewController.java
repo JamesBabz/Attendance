@@ -85,16 +85,16 @@ public class LoginViewController extends Dragable implements Initializable
     }
 
     @FXML
-    private void handleLogin() throws SQLException
+    private void handleLogin() throws SQLException, IOException
     {
-        try
-        {
+//        try
+//        {
             checkLoginInformation(txtUser.getText(), txtPass.getText());
-        } catch (IOException ex)
-        {
-            showErrorDialog("I/O Error", "", "We couldn't get access to the "
-                    + "requested data!");
-        }
+//        } catch (IOException ex)
+//        {
+//            showErrorDialog("I/O Error", "", "We couldn't get access to the "
+//                    + "requested data!");
+//        }
     }
 
     @FXML
@@ -161,26 +161,6 @@ public class LoginViewController extends Dragable implements Initializable
                 + " could not be found in our database.");
     }
 
-//    private void checkUserInput(String userName, String password) throws IOException
-//    {
-//        for (Person person : people)
-//        {
-//            if (userName.equals(person.getUserName()) && password.equals(person.getPassword()))
-//            {
-//                if (person instanceof Teacher)
-//                {
-//                    teacherModel.setCurrentUser((Teacher) person);
-//                    saveLogin(person);
-//                    loadStage("/attendence/gui/view/TeacherView.fxml", "Teacher");
-//                } else if (person instanceof Student)
-//                {
-//                    studentModel.setCurrentUser((Student) person);
-//                    saveLogin(person);
-//                    loadStage("/attendence/gui/view/StudentView.fxml", "Student");
-//                }
-//            }
-//        }
-//    }
     /**
      * Shows an error dialog.
      *
@@ -198,13 +178,6 @@ public class LoginViewController extends Dragable implements Initializable
         alert.showAndWait();
     }
 
-//    private void saveLogin(Person person) throws IOException
-//    {
-//        if (checkBoxRemember.isSelected())
-//        {
-//            loginModel.saveLoginData(person);
-//        }
-//    }
     private void loadStage(String viewPath) throws IOException
     {
         Stage primaryStage = (Stage) txtUser.getScene().getWindow();
@@ -215,9 +188,7 @@ public class LoginViewController extends Dragable implements Initializable
         Stage newStage = new Stage(StageStyle.UNDECORATED);
         newStage.setScene(new Scene(root));
 
-//        newStage.initModality(Modality.WINDOW_MODAL);
         newStage.initOwner(primaryStage);
-//        newStage.setTitle(title);
 
         newStage.show();
     }
@@ -248,7 +219,7 @@ public class LoginViewController extends Dragable implements Initializable
             alert.setAlertType(AlertType.ERROR);
             alert.setHeaderText("Load failed");
         }
-        if (username != "")
+        if (!"".equals(username))
         {
 
             txtUser.setText(username);
