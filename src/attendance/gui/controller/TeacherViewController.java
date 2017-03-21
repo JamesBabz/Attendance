@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -291,7 +292,11 @@ public class TeacherViewController extends Dragable implements Initializable
        int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() +1;
        Semester semester = new Semester(semesterNum, comboClass.getValue());
        
-   
+       LocalDate firstDate = semester.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+       LocalDate secondDate = semester.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+       
+       dateFirstDate.setValue(firstDate);
+       dateSecondDate.setValue(secondDate);
 
     }
 }
