@@ -65,4 +65,96 @@ public class Lecture
     {
         return teacherId;
     }
+
+    public int[] getPeriodStart()
+    {
+        int[] returnArray = new int[2];
+
+        switch (period)
+        {
+            case 1:
+                returnArray[0] = 8;
+                returnArray[1] = 15;
+                break;
+            case 2:
+                returnArray[0] = 9;
+                returnArray[1] = 00;
+                break;
+            case 3:
+                returnArray[0] = 10;
+                returnArray[1] = 00;
+                break;
+            case 4:
+                returnArray[0] = 10;
+                returnArray[1] = 45;
+                break;
+            case 5:
+                returnArray[0] = 12;
+                returnArray[1] = 00;
+                break;
+            case 6:
+                returnArray[0] = 12;
+                returnArray[1] = 45;
+                break;
+            case 7:
+                returnArray[0] = 13;
+                returnArray[1] = 45;
+                break;
+            case 8:
+                returnArray[0] = 14;
+                returnArray[1] = 30;
+                break;
+            default:
+                returnArray = null;
+                break;
+        }
+
+        return returnArray;
+    }
+
+    public int[] getPeriodEnd()
+    {
+        int[] returnArray = new int[2];
+
+        switch (period)
+        {
+            case 1:
+                returnArray[0] = 9;
+                returnArray[1] = 00;
+                break;
+            case 2:
+                returnArray[0] = 9;
+                returnArray[1] = 45;
+                break;
+            case 3:
+                returnArray[0] = 10;
+                returnArray[1] = 45;
+                break;
+            case 4:
+                returnArray[0] = 11;
+                returnArray[1] = 30;
+                break;
+            case 5:
+                returnArray[0] = 12;
+                returnArray[1] = 45;
+                break;
+            case 6:
+                returnArray[0] = 13;
+                returnArray[1] = 30;
+                break;
+            case 7:
+                returnArray[0] = 14;
+                returnArray[1] = 30;
+                break;
+            case 8:
+                returnArray[0] = 15;
+                returnArray[1] = 15;
+                break;
+            default:
+                returnArray = null;
+                break;
+        }
+
+        return returnArray;
+    }
 }
