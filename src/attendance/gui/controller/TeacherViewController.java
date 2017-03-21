@@ -6,6 +6,7 @@
 package attendance.gui.controller;
 
 import attendance.be.Absence;
+import attendance.be.Semester;
 import attendance.be.Student;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.TeacherModel;
@@ -16,15 +17,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -42,9 +41,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import java.time.temporal.ChronoUnit;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TableRow;
 
 /**
  * The controller for the teacher view.
@@ -58,6 +55,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private final PersonManager manager;
     private final DateTimeModel dateTimeModel;
     private final List<Student> studentList;
+    
     private final ObservableList<Student> allStudents;
     private ObservableList<Student> searchedStudents;
     private final List<Absence> absence;
@@ -104,6 +102,7 @@ public class TeacherViewController extends Dragable implements Initializable
         dateTimeModel = new DateTimeModel();
         allStudents.addAll(studentList);
         absence = new ArrayList<>();
+        
     }
 
     /**
@@ -122,6 +121,7 @@ public class TeacherViewController extends Dragable implements Initializable
         updateDateInfo();
         search();
         setLogo();
+        setSemester();
 
     }
 
@@ -135,7 +135,6 @@ public class TeacherViewController extends Dragable implements Initializable
         }
     }
 
-    @FXML
     public void handleFirstDate() throws SQLException
     {
         firstDate = dateFirstDate.getValue();
@@ -147,7 +146,6 @@ public class TeacherViewController extends Dragable implements Initializable
 
     }
 
-    @FXML
     public void handleSecondDate() throws SQLException
     {
         secondDate = dateSecondDate.getValue();
@@ -273,5 +271,27 @@ public class TeacherViewController extends Dragable implements Initializable
             alert.setTitle("Connection to database lost");
                     
         }
+    }
+    
+    private void setSemester()
+    {
+        
+    comboSemester.getItems().addAll(
+            "1. Semester",
+            "2. Semester",
+            "3. Semester",
+            "4. Semester"  
+);
+    
+    
+    }
+
+    @FXML
+    private void handleSemesterSelect(ActionEvent event) {
+       int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() +1;
+       Semester semester = new Semester(semesterNum, comboClass.getValue());
+       
+   
+
     }
 }
