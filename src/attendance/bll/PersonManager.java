@@ -78,5 +78,9 @@ public class PersonManager {
     public List<Lecture> getAllLectures(){
         return dbManager.getAllLectures();
     }
+    
+    public void addAbsence(Absence absence) throws SQLException{
+        dbManager.addAbsence(absence);
+    }
 
 }

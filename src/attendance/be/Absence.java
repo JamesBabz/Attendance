@@ -30,6 +30,12 @@ public class Absence
         this.lectureId = lectureId;
         this.date = date;
     }
+public Absence(int studentId, int lectureId, Date date)
+    {
+        this.studentId = studentId;
+        this.lectureId = lectureId;
+        this.date = date;
+    }
 
     /**
      * Gets the absence id.
