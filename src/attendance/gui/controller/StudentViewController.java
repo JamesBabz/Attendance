@@ -11,6 +11,7 @@ import attendance.be.Semester;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.StudentModel;
 import attendance.bll.PersonManager;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -101,6 +102,14 @@ public class StudentViewController extends Dragable implements Initializable
         }
         setLogo();
         calculateAbsence();
+//        try
+//        {
+//            manager.updateStudentImage(model.getCurrentUser(), "Hello.png");
+//        }
+//        catch (SQLException | IOException ex)
+//        {
+//            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     @FXML

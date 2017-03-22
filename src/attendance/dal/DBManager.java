@@ -12,6 +12,10 @@ import attendance.be.Student;
 import attendance.be.Teacher;
 import attendance.bll.DateTimeManager;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +27,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -47,7 +51,7 @@ public final class DBManager
         setAllLectures();
     }
 
-    public void setAllPeople() throws SQLException
+    public void setAllPeople() throws SQLException, IOException
     {
         String sql = "SELECT * FROM People";
 
@@ -85,7 +89,20 @@ public final class DBManager
                     {
                         lastCheckout = null;
                     }
-                    Student student = new Student(id, fName, lName, email, user, pass, phoneNum, cName, lastCheckin, lastCheckout);
+                    
+                    BufferedImage studentImage = null;
+//                    byte[] imageBytes = rs.getBytes("ImageBinary");
+//                    if (imageBytes.length > 0)
+//                    {
+//                        studentImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
+//                        
+//                    }
+//                    else
+//                    {
+//                        studentImage = null;
+//                    }
+                    
+                    Student student = new Student(id, fName, lName, email, user, pass, phoneNum, cName, lastCheckin, lastCheckout, studentImage);
                     students.add(student);
                 }
                 else
@@ -116,6 +133,25 @@ public final class DBManager
         people.addAll(getTeachers());
 
         return people;
+    }
+    
+    public void updateStudentImage(Student student, String image) throws IOException, SQLException
+    {
+        String sql = "UPDATE People SET ImageBinary = ? WHERE ID = ?";
+        int length;
+        try (Connection con = cm.getConnection())
+        {
+            PreparedStatement ps = con.prepareStatement(sql);
+            File imageFile = new File(image);
+            FileInputStream fis = new FileInputStream(imageFile);
+            length = (int) imageFile.length();
+            byte[] imageBytes = new byte[length];
+            int i = fis.read(imageBytes);
+            ps.setBytes(1, imageBytes);
+            ps.setInt(2, student.getId());
+            ps.executeUpdate();
+
+        }
     }
 
     public void updateCheckIn(Student student) throws SQLException
@@ -179,6 +215,7 @@ public final class DBManager
             ResultSet rs = st.executeQuery(sql);
             while (rs.next())
             {
+           
                 int id = rs.getInt(1);
                 int studentID = rs.getInt(2);
                 int lectureID = rs.getInt(3);
