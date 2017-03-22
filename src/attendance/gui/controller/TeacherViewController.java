@@ -196,8 +196,7 @@ public class TeacherViewController extends Dragable implements Initializable {
 
     private void addCheckBoxes() {
 
-        colAbsence.setCellValueFactory(
-                new Callback<CellDataFeatures<Student, Boolean>, ObservableValue<Boolean>>() {
+        colAbsence.setCellValueFactory(new Callback<CellDataFeatures<Student, Boolean>, ObservableValue<Boolean>>() {
 
             @Override
             public ObservableValue<Boolean> call(CellDataFeatures<Student, Boolean> param) {
