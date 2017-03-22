@@ -6,10 +6,10 @@
 package attendance.gui.model;
 
 import attendance.be.Absence;
+import attendance.be.Lecture;
 import attendance.be.Student;
 import java.util.List;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  *
@@ -20,6 +20,7 @@ public class StudentModel
 
     private Student currentUser;
     private List<Absence> missedClasses;
+    private List<Lecture> lectures;
 
     private static StudentModel instance;
 
@@ -52,10 +53,17 @@ public class StudentModel
         }
     }
 
-//    public void addMissedClass(Absence miss)
-//    {
-//        missedClasses.add(miss);
-//    }
+    public List<Lecture> getLectures()
+    {
+        return lectures;
+    }
+
+    public void setLectures(List<Lecture> lectures)
+    {
+        this.lectures = lectures;
+    }
+
+
 
     public Student getCurrentUser()
     {

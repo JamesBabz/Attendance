@@ -6,10 +6,12 @@
 package attendance.dal;
 
 import attendance.be.Absence;
+import attendance.be.Lecture;
 import attendance.be.Person;
 import attendance.be.Student;
 import attendance.be.Teacher;
 import attendance.bll.DateTimeManager;
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,15 +19,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
  * @author James
  */
-public class DBManager
+public final class DBManager
 {
 
     ConnectionManager cm;
@@ -34,11 +38,13 @@ public class DBManager
     List<Student> students = new ArrayList<>();
     List<Teacher> teachers = new ArrayList<>();
     List<Absence> absences = new ArrayList<>();
+    List<Lecture> lectures = new ArrayList<>();
 
     public DBManager() throws SQLException, IOException
     {
         this.cm = new ConnectionManager();
         setAllPeople();
+        setAllLectures();
     }
 
     public void setAllPeople() throws SQLException
@@ -138,7 +144,7 @@ public class DBManager
         }
     }
 
-    public List<Absence> getAbsence(int sID) throws SQLException
+    public List<Absence> getSingleStudentAbsence(int sID) throws SQLException
     {
         absences.clear();
         String sql = "SELECT * FROM Absence WHERE StudentID = " + sID;
@@ -160,4 +166,74 @@ public class DBManager
         return absences;
     }
 
+    public List<Absence> getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLServerException, SQLException
+    {
+        java.sql.Date sDate = java.sql.Date.valueOf(startDate);
+        java.sql.Date eDate = java.sql.Date.valueOf(endDate);
+        System.out.println(eDate);
+        String sql = "SELECT * FROM Absence WHERE Date >= '" + sDate + "' AND Date <= '" + eDate + "'";
+        try (Connection con = cm.getConnection())
+        {
+            PreparedStatement ps = con.prepareStatement(sql);
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next())
+            {
+                int id = rs.getInt(1);
+                int studentID = rs.getInt(2);
+                int lectureID = rs.getInt(3);
+                Date date = rs.getDate(4);
+                Absence absence = new Absence(id, studentID, lectureID, date);
+                absences.add(absence);
+            }
+        }
+
+        return absences;
+    }
+
+    public void setAllLectures() throws SQLException
+    {
+        String sql = "SELECT * FROM Lectures";
+        try (Connection con = cm.getConnection())
+        {
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next())
+            {
+                int id = rs.getInt(1);
+                String lectureName = rs.getString(2);
+                String day = rs.getString(3);
+                int period = rs.getInt(4);
+                String className = rs.getString(5);
+                int semester = rs.getInt(6);
+                int teacherId = rs.getInt(7);
+                Lecture lecture = new Lecture(id, lectureName, day, period, className, semester, teacherId);
+                lectures.add(lecture);
+            }
+        }
+    }
+
+    public List<Lecture> getAllLectures()
+    {
+        return lectures;
+    }
+
+    public void addAbsence(Absence absence) throws SQLException
+    {
+//        String sql = "INSERT INTO Absence VALUES(?, ?, ?, ?)";
+//        int id = 0;
+//            Random rand = new Random();
+//            int shit = rand.nextInt(40);
+//            System.out.println(shit);
+//        try (Connection con = cm.getConnection())
+//        {
+//            PreparedStatement ps = con.prepareStatement(sql);
+//            ps.setInt(1, shit);
+//            ps.setInt(2, absence.getStudentId());
+//            ps.setInt(3, absence.getLectureId());
+//            java.sql.Date sqlDate = new java.sql.Date(absence.getDate().getTime());
+//            ps.setDate(4, sqlDate);
+//            ps.executeQuery();
+//        }
+    }
 }

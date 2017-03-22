@@ -5,15 +5,8 @@
  */
 package attendance.bll;
 
-import attendance.be.Person;
 import attendance.dal.SaveFileDAO;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
