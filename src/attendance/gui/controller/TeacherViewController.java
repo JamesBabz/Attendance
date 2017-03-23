@@ -217,27 +217,30 @@ public class TeacherViewController extends Dragable implements Initializable
     private void changeStudentAbsence()
     {
         selectedStudent = tblStudentAbs.getSelectionModel().getSelectedItem();
-
-        if (selectedStudent.isRegistered())
+        if (selectedStudent != null)
         {
 
-            selectedStudent.setLastCheckOut(Timestamp.from(Instant.now()));
-            selectedStudent.setLastCheckIn(null);
-            selectedStudent.setRegistered(false);
-            updateCheckInAndOut();
-        }
-        else
-        {
-            if (selectedStudent.getLastCheckOut() == null)
+            if (selectedStudent.isRegistered())
             {
-                selectedStudent.setLastCheckOut(Timestamp.from(Instant.now().minusSeconds(1)));
+
+                selectedStudent.setLastCheckOut(Timestamp.from(Instant.now()));
+                selectedStudent.setLastCheckIn(null);
+                selectedStudent.setRegistered(false);
+                updateCheckInAndOut();
+            }
+            else
+            {
+                if (selectedStudent.getLastCheckOut() == null)
+                {
+                    selectedStudent.setLastCheckOut(Timestamp.from(Instant.now().minusSeconds(1)));
+
+                    updateCheckInAndOut();
+                }
+                selectedStudent.setLastCheckIn(Timestamp.from(Instant.now()));
+                selectedStudent.setRegistered(true);
 
                 updateCheckInAndOut();
             }
-            selectedStudent.setLastCheckIn(Timestamp.from(Instant.now()));
-            selectedStudent.setRegistered(true);
-
-            updateCheckInAndOut();
         }
     }
 
@@ -373,9 +376,11 @@ public class TeacherViewController extends Dragable implements Initializable
             if (student.getStudentImage() != null)
             {
                 image = SwingFXUtils.toFXImage(student.getStudentImage(), null);
-            }else{
-            image = new Image("attendance/gui/view/images/profile-placeholder.png");
-                
+            }
+            else
+            {
+                image = new Image("attendance/gui/view/images/profile-placeholder.png");
+
             }
             ImageView imgV = new ImageView(image);
             imgV.setFitWidth(IMAGESIZE);
