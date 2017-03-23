@@ -7,14 +7,10 @@ package attendance.gui.controller;
 
 import attendance.be.Absence;
 import attendance.be.Lecture;
-import attendance.bll.PersonManager;
-import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.StudentModel;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,13 +23,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -43,7 +32,7 @@ import javafx.stage.Stage;
 public class PieChartViewController implements Initializable
 {
 
-   private final ObservableList data;
+    private final ObservableList data;
     private final StudentModel model;
 
     List<String> lectureAbsence;
@@ -55,7 +44,6 @@ public class PieChartViewController implements Initializable
     @FXML
     private PieChart absenceChart;
 
-
     public PieChartViewController() throws SQLException, IOException
     {
         this.pieChartData = FXCollections.observableArrayList();
@@ -65,9 +53,9 @@ public class PieChartViewController implements Initializable
         lectureAbsence = new ArrayList<>();
         lectureValue = new ArrayList<>();
 
-            this.DifferentClasses = new String[]
+        this.DifferentClasses = new String[]
         {
-            "SDE", "SCO", "ITO", "DBOS"
+            "DBOS", "ITO", "SCO", "SDE"
         };
     }
 
@@ -78,10 +66,8 @@ public class PieChartViewController implements Initializable
     public void initialize(URL url, ResourceBundle rb)
     {
         updatePieChart();
-      
+
     }
-
-
 
     private void updatePieChart()
     {
@@ -89,10 +75,9 @@ public class PieChartViewController implements Initializable
         updateLectureAbsence();
 
         absenceChart.setData(pieChartData);
-        System.out.println(pieChartData);
 
-        absenceChart.setLabelLineLength(100);
-        absenceChart.setLegendSide(Side.LEFT);
+//        absenceChart.setLabelLineLength(100);
+//        absenceChart.setLegendSide(Side.LEFT);
 
 //        labelProcent.setTextFill(Color.DARKORANGE);
 //        labelProcent.setStyle("-fx-font: 24 arial;");
@@ -131,7 +116,6 @@ public class PieChartViewController implements Initializable
 //            }
 //        }
 //    }
-
     private void updateLectureAbsence()
     {
         List<Lecture> lectures = model.getLectures();
@@ -148,38 +132,59 @@ public class PieChartViewController implements Initializable
             }
 
         }
-        
-        getDistinct();
 
-        for (String string : lectureAbsence)
-        {
-            double doubleToPrint = getAmountOfAbsencePerClass(lectureAbsence);
-            System.out.println(getAmountOfAbsencePerClass(lectureAbsence));
-            pieChartData.add(new PieChart.Data(string, doubleToPrint));
-        }
-        {
+//        );
+//        for (String lecture : lectureAbsence)
+//        {
+        double[] absence = getAmountOfAbsencePerClass(lectureAbsence);
+//        }
 
+//        getDistinct();
+//
+        for (int i = 0; i < getDistinct().size(); i++)
+        {
+            pieChartData.add(new PieChart.Data(getDistinct().get(i), absence[i]));
         }
+         pieChartData.add(new PieChart.Data("Attendance", 135));
+//        for (String string : getDistinct())
+//        {
+//            double doubleToPrint = getAmountOfAbsencePerClass(lectureAbsence);
+//            System.out.println(getAmountOfAbsencePerClass(lectureAbsence));
+//            pieChartData.add(new PieChart.Data(string, doubleToPrint));
+//        }
+//        {
+//        }
     }
 
-        private double getAmountOfAbsencePerClass(List<String> classNames)
+    private double[] getAmountOfAbsencePerClass(List<String> classNames)
     {
-        double doubleToPrint = 0;
-
+        double[] amount = new double[getDistinct().size()];
+        String txt = "";
         for (String name : DifferentClasses)
         {
             if (Collections.frequency(classNames, name) != 0)
             {
-                doubleToPrint ++; 
+                txt += Collections.frequency(classNames, name) + "";
+//                amount += Collections.frequency(classNames, name);
             }
         }
-        return doubleToPrint;
+        for (int i = 0; i < amount.length; i++)
+        {
+            amount[i] = Double.parseDouble(Character.toString(txt.charAt(i)));
+        }
+//                System.out.println(txt);
+        return amount;
     }
-    private void getDistinct()
+//        
+
+    private ArrayList<String> getDistinct()
     {
+        ArrayList<String> returnArray = new ArrayList<>();
         Set<String> distinctLectureAbsence = new HashSet<>(lectureAbsence);
-        lectureAbsence.clear();
-        lectureAbsence.addAll(distinctLectureAbsence);
-//        lectureAbsence.removeAll(Collections.singleton(null));
+        returnArray.clear();
+        returnArray.addAll(distinctLectureAbsence);
+        returnArray.removeAll(Collections.singleton(null));
+        Collections.sort(returnArray);
+        return returnArray;
     }
 }

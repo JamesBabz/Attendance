@@ -24,9 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -52,13 +55,13 @@ import javafx.scene.control.Alert;
  *
  * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
-public class TeacherViewController extends Dragable implements Initializable {
+public class TeacherViewController extends Dragable implements Initializable
+{
 
     private final TeacherModel model;
     private final PersonManager manager;
     private final DateTimeModel dateTimeModel;
     private final List<Student> studentList;
-
     private final ObservableList<Student> allStudents;
     private ObservableList<Student> searchedStudents;
     private final List<Absence> absence;
@@ -91,11 +94,14 @@ public class TeacherViewController extends Dragable implements Initializable {
 
     LocalDate firstDate;
     LocalDate secondDate;
+    @FXML
+    private TableColumn<Student, Double> colAbsenceInP;
 
     /**
      * The default constructor for the TeacherViewController.
      */
-    public TeacherViewController() throws SQLException, IOException {
+    public TeacherViewController() throws SQLException, IOException
+    {
         this.manager = new PersonManager();
         this.studentList = manager.getAllStudents();
         this.allStudents = FXCollections.observableArrayList();
@@ -111,78 +117,70 @@ public class TeacherViewController extends Dragable implements Initializable {
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle rb)
+    {
         lblUsername.setText(model.getCurrentUser().getFirstName() + " " + model.getCurrentUser().getLastName());
         tblStudentAbs.setItems(allStudents);
         colStudent.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-
+        colAbsenceInP.setCellValueFactory(new PropertyValueFactory<>("PercentageAbsence"));
+        colPictures.setCellValueFactory(new PropertyValueFactory<>("profilePic"));
+        imageThing();
         addCheckBoxes();
 
-     
         updateDateInfo();
         search();
         setLogo();
         setSemester();
         setClass();
-        
+
     }
 
-    public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException {
+    public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException
+    {
         absence.clear();
         absence.addAll(manager.getAllAbsence(startDate, endDate));
-        for (Absence abs : absence) {
-            System.out.println(abs.getDate().toString());
-        }
-    }
-
-    public void handleFirstDate() throws SQLException {
-        firstDate = dateFirstDate.getValue();
-        if (dateSecondDate.getValue() != null) {
-            getAllAbsence(firstDate, secondDate);
-
-        }
-
-    }
-
-    public void handleSecondDate() throws SQLException {
-        secondDate = dateSecondDate.getValue();
-        if (dateFirstDate.getValue() != null) {
-            getAllAbsence(firstDate, secondDate);
-        }
+        updateTable();
 
     }
 
     @FXML
-    private void closeWindow(MouseEvent event) {
+    private void closeWindow(MouseEvent event)
+    {
         Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.close();
 
     }
 
     @FXML
-    private void setOffset(MouseEvent event) {
+    private void setOffset(MouseEvent event)
+    {
         startDrag(event);
     }
 
-    private void getCurrentDate() {
+    private void getCurrentDate()
+    {
 //        dateFirstDate.setValue(LocalDate.now());
 //        dateSecondDate.setValue(LocalDate.now());
 
     }
 
-    private void updateDateInfo() {
+    private void updateDateInfo()
+    {
 
     }
 
-    private void search() {
+    private void search()
+    {
         txtSearch.textProperty().addListener((ObservableValue<? extends String> listener, String oldQuery, String newQuery)
-                -> {
-            searchedStudents.setAll(model.search(studentList, newQuery));
-            tblStudentAbs.setItems(searchedStudents);
+                -> 
+                {
+                    searchedStudents.setAll(model.search(studentList, newQuery));
+                    tblStudentAbs.setItems(searchedStudents);
         });
     }
 
-    private void setLogo() {
+    private void setLogo()
+    {
         Image imageEasv = new Image("attendance/gui/view/images/easv.png");
         imageLogo.setImage(imageEasv);
         imageLogo.setFitHeight(80);
@@ -190,16 +188,20 @@ public class TeacherViewController extends Dragable implements Initializable {
     }
 
     @FXML
-    private void drag(MouseEvent event) {
+    private void drag(MouseEvent event)
+    {
         dragging(event, txtSearch);
     }
 
-    private void addCheckBoxes() {
+    private void addCheckBoxes()
+    {
 
-        colAbsence.setCellValueFactory(new Callback<CellDataFeatures<Student, Boolean>, ObservableValue<Boolean>>() {
+        colAbsence.setCellValueFactory(new Callback<CellDataFeatures<Student, Boolean>, ObservableValue<Boolean>>()
+        {
 
             @Override
-            public ObservableValue<Boolean> call(CellDataFeatures<Student, Boolean> param) {
+            public ObservableValue<Boolean> call(CellDataFeatures<Student, Boolean> param)
+            {
                 return param.getValue().registeredProperty();
             }
         });
@@ -208,17 +210,22 @@ public class TeacherViewController extends Dragable implements Initializable {
     }
 
     @FXML
-    private void changeStudentAbsence() {
+    private void changeStudentAbsence()
+    {
         selectedStudent = tblStudentAbs.getSelectionModel().getSelectedItem();
 
-        if (selectedStudent.isRegistered()) {
+        if (selectedStudent.isRegistered())
+        {
 
             selectedStudent.setLastCheckOut(Timestamp.from(Instant.now()));
             selectedStudent.setLastCheckIn(null);
             selectedStudent.setRegistered(false);
             updateCheckInAndOut();
-        } else {
-            if (selectedStudent.getLastCheckOut() == null) {
+        }
+        else
+        {
+            if (selectedStudent.getLastCheckOut() == null)
+            {
                 selectedStudent.setLastCheckOut(Timestamp.from(Instant.now().minusSeconds(1)));
 
                 updateCheckInAndOut();
@@ -230,18 +237,23 @@ public class TeacherViewController extends Dragable implements Initializable {
         }
     }
 
-    private void updateCheckInAndOut() {
-        try {
+    private void updateCheckInAndOut()
+    {
+        try
+        {
             manager.updateCheckIn(selectedStudent);
             manager.updateCheckOut(selectedStudent);
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex)
+        {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Connection to database lost");
 
         }
     }
 
-    private void setSemester() {
+    private void setSemester()
+    {
 
         comboSemester.getItems().addAll(
                 "1. Semester",
@@ -251,15 +263,18 @@ public class TeacherViewController extends Dragable implements Initializable {
         );
     }
 
-    private void setClass() {
+    private void setClass()
+    {
         comboClass.getItems().addAll(
                 getAllClassNames()
         );
     }
 
-    private List<String> getAllClassNames() {
+    private List<String> getAllClassNames()
+    {
         List<String> classNames = new ArrayList<>();
-        for (Student student : studentList) {
+        for (Student student : studentList)
+        {
             classNames.add(student.getClassName());
         }
 
@@ -272,21 +287,99 @@ public class TeacherViewController extends Dragable implements Initializable {
     }
 
     @FXML
-    private void handleSemesterSelect(ActionEvent event) {
-        
-        if(comboClass.getSelectionModel().getSelectedIndex() != -1){
-        int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() + 1;
-        Semester semester = new Semester(semesterNum, comboClass.getValue());
-        
-        LocalDate firstDate = semester.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate secondDate = semester.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    private void handleSemesterSelect(ActionEvent event)
+    {
 
-        dateFirstDate.setValue(firstDate);
-        dateSecondDate.setValue(secondDate);
+        if (comboClass.getSelectionModel().getSelectedIndex() != -1)
+        {
+            int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() + 1;
+            Semester semester = new Semester(semesterNum, comboClass.getValue());
+
+            LocalDate firstDate = semester.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate secondDate = semester.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            dateFirstDate.setValue(firstDate);
+            dateSecondDate.setValue(secondDate);
 
         }
 
-  
+    }
+
+    private void updateTable()
+    {
+//        for (Student student : studentList)
+//        {
+//            student.setPercentageAbsence(firstDate, secondDate, absence);
+//        }
+//        colAbsenceInP.setVisible(true);
+//        colAbsence.setVisible(false);
+//        tblStudentAbs.refresh();
+    }
+
+    @FXML
+    private void handleFirstDateSelect(ActionEvent event)
+    {
+        setFirstDate();
+    }
+
+    private void setFirstDate()
+    {
+        firstDate = dateFirstDate.getValue();
+        if (dateSecondDate.getValue() != null)
+        {
+            try
+            {
+                getAllAbsence(firstDate, secondDate);
+            }
+            catch (SQLException ex)
+            {
+                Logger.getLogger(TeacherViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }
+
+    @FXML
+    private void handleSecondDateSelect(ActionEvent event)
+    {
+        setSecondDate();
+    }
+
+    private void setSecondDate()
+    {
+        secondDate = dateSecondDate.getValue();
+        if (dateFirstDate.getValue() != null)
+        {
+            try
+            {
+                getAllAbsence(firstDate, secondDate);
+            }
+            catch (SQLException ex)
+            {
+                Logger.getLogger(TeacherViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    private void imageThing()
+    {
+        int x = 0;
+        for (Student student : studentList)
+        {
+            Image image = SwingFXUtils.toFXImage(student, null);
+//    imgViewStudent.setImage(image);
+//            Image img = new Image("attendance/gui/view/images/Monkey.png");
+            ImageView imgV = new ImageView(img);
+            imgV.setFitWidth(100);
+            imgV.setPreserveRatio(true);
+            imgV.setSmooth(true);
+            imgV.setCache(true);
+            student.setProfilePic(imgV);
+            x++;
+            if (x >= 20)
+            {
+                break;
+            }
+        }
     }
 
 }
