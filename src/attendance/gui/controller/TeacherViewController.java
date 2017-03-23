@@ -66,6 +66,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private ObservableList<Student> searchedStudents;
     private final List<Absence> absence;
     private Student selectedStudent;
+    private final int IMAGESIZE = 150;
 
     @FXML
     private Label lblUsername;
@@ -124,6 +125,9 @@ public class TeacherViewController extends Dragable implements Initializable
         colStudent.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         colAbsenceInP.setCellValueFactory(new PropertyValueFactory<>("PercentageAbsence"));
         colPictures.setCellValueFactory(new PropertyValueFactory<>("profilePic"));
+        colPictures.setMinWidth(IMAGESIZE);
+        colPictures.setMaxWidth(IMAGESIZE);
+        colPictures.setEditable(false);
         imageThing();
         addCheckBoxes();
 
@@ -213,27 +217,30 @@ public class TeacherViewController extends Dragable implements Initializable
     private void changeStudentAbsence()
     {
         selectedStudent = tblStudentAbs.getSelectionModel().getSelectedItem();
-
-        if (selectedStudent.isRegistered())
+        if (selectedStudent != null)
         {
 
-            selectedStudent.setLastCheckOut(Timestamp.from(Instant.now()));
-            selectedStudent.setLastCheckIn(null);
-            selectedStudent.setRegistered(false);
-            updateCheckInAndOut();
-        }
-        else
-        {
-            if (selectedStudent.getLastCheckOut() == null)
+            if (selectedStudent.isRegistered())
             {
-                selectedStudent.setLastCheckOut(Timestamp.from(Instant.now().minusSeconds(1)));
+
+                selectedStudent.setLastCheckOut(Timestamp.from(Instant.now()));
+                selectedStudent.setLastCheckIn(null);
+                selectedStudent.setRegistered(false);
+                updateCheckInAndOut();
+            }
+            else
+            {
+                if (selectedStudent.getLastCheckOut() == null)
+                {
+                    selectedStudent.setLastCheckOut(Timestamp.from(Instant.now().minusSeconds(1)));
+
+                    updateCheckInAndOut();
+                }
+                selectedStudent.setLastCheckIn(Timestamp.from(Instant.now()));
+                selectedStudent.setRegistered(true);
 
                 updateCheckInAndOut();
             }
-            selectedStudent.setLastCheckIn(Timestamp.from(Instant.now()));
-            selectedStudent.setRegistered(true);
-
-            updateCheckInAndOut();
         }
     }
 
@@ -365,20 +372,27 @@ public class TeacherViewController extends Dragable implements Initializable
         int x = 0;
         for (Student student : studentList)
         {
-            Image image = SwingFXUtils.toFXImage(student, null);
-//    imgViewStudent.setImage(image);
-//            Image img = new Image("attendance/gui/view/images/Monkey.png");
-            ImageView imgV = new ImageView(img);
-            imgV.setFitWidth(100);
+            Image image;
+            if (student.getStudentImage() != null)
+            {
+                image = SwingFXUtils.toFXImage(student.getStudentImage(), null);
+            }
+            else
+            {
+                image = new Image("attendance/gui/view/images/profile-placeholder.png");
+
+            }
+            ImageView imgV = new ImageView(image);
+            imgV.setFitWidth(IMAGESIZE);
             imgV.setPreserveRatio(true);
             imgV.setSmooth(true);
             imgV.setCache(true);
             student.setProfilePic(imgV);
             x++;
-            if (x >= 20)
-            {
-                break;
-            }
+//            if (x >= 20)
+//            {
+//                break;
+//            }
         }
     }
 

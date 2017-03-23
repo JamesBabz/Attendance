@@ -149,7 +149,7 @@ public class StudentViewController extends Dragable implements Initializable
         }
         btnCheckIn.setText(btnText);
         btnCheckIn.setStyle(btnStyle);
-        lblUser.setText(model.getCurrentUser().getFirstName() + " " + model.getCurrentUser().getLastName() + loginText);
+        lblUser.setText(model.getCurrentUser().getFirstName() + " " + model.getCurrentUser().getLastName());
     }
 
     @FXML
