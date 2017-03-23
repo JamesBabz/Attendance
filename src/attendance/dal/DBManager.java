@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package attendance.dal;
 
 import attendance.be.Absence;
@@ -89,19 +84,21 @@ public final class DBManager
                     {
                         lastCheckout = null;
                     }
-                    
+
+                    byte[] imageBytes = rs.getBytes("ImageBinary");
                     BufferedImage studentImage = null;
-//                    byte[] imageBytes = rs.getBytes("ImageBinary");
-//                    if (imageBytes.length > 0)
-//                    {
-//                        studentImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
-//                        
-//                    }
-//                    else
-//                    {
-//                        studentImage = null;
-//                    }
-                    
+                    if (imageBytes != null)
+                    {
+                        try
+                        {
+                            studentImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
+                        }
+                        catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
                     Student student = new Student(id, fName, lName, email, user, pass, phoneNum, cName, lastCheckin, lastCheckout, studentImage);
                     students.add(student);
                 }
@@ -134,7 +131,7 @@ public final class DBManager
 
         return people;
     }
-    
+
     public void updateStudentImage(Student student, String image) throws IOException, SQLException
     {
         String sql = "UPDATE People SET ImageBinary = ? WHERE ID = ?";
@@ -215,7 +212,7 @@ public final class DBManager
             ResultSet rs = st.executeQuery(sql);
             while (rs.next())
             {
-           
+
                 int id = rs.getInt(1);
                 int studentID = rs.getInt(2);
                 int lectureID = rs.getInt(3);
