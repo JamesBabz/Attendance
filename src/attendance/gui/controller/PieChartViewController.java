@@ -145,6 +145,7 @@ public class PieChartViewController implements Initializable
         {
             pieChartData.add(new PieChart.Data(getDistinct().get(i), absence[i]));
         }
+         pieChartData.add(new PieChart.Data("Attendance", 135));
 //        for (String string : getDistinct())
 //        {
 //            double doubleToPrint = getAmountOfAbsencePerClass(lectureAbsence);
