@@ -66,6 +66,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private ObservableList<Student> searchedStudents;
     private final List<Absence> absence;
     private Student selectedStudent;
+    private final int IMAGESIZE = 150;
 
     @FXML
     private Label lblUsername;
@@ -124,6 +125,9 @@ public class TeacherViewController extends Dragable implements Initializable
         colStudent.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         colAbsenceInP.setCellValueFactory(new PropertyValueFactory<>("PercentageAbsence"));
         colPictures.setCellValueFactory(new PropertyValueFactory<>("profilePic"));
+        colPictures.setMinWidth(IMAGESIZE);
+        colPictures.setMaxWidth(IMAGESIZE);
+        colPictures.setEditable(false);
         imageThing();
         addCheckBoxes();
 
@@ -365,20 +369,25 @@ public class TeacherViewController extends Dragable implements Initializable
         int x = 0;
         for (Student student : studentList)
         {
-            Image image = SwingFXUtils.toFXImage(student, null);
-//    imgViewStudent.setImage(image);
-//            Image img = new Image("attendance/gui/view/images/Monkey.png");
-            ImageView imgV = new ImageView(img);
-            imgV.setFitWidth(100);
+            Image image;
+            if (student.getStudentImage() != null)
+            {
+                image = SwingFXUtils.toFXImage(student.getStudentImage(), null);
+            }else{
+            image = new Image("attendance/gui/view/images/profile-placeholder.png");
+                
+            }
+            ImageView imgV = new ImageView(image);
+            imgV.setFitWidth(IMAGESIZE);
             imgV.setPreserveRatio(true);
             imgV.setSmooth(true);
             imgV.setCache(true);
             student.setProfilePic(imgV);
             x++;
-            if (x >= 20)
-            {
-                break;
-            }
+//            if (x >= 20)
+//            {
+//                break;
+//            }
         }
     }
 
