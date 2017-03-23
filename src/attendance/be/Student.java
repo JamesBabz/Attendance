@@ -2,9 +2,11 @@ package attendance.be;
 
 import java.awt.image.BufferedImage;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import static java.time.temporal.ChronoUnit.DAYS;
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.image.Image;
 
 /**
  *
@@ -20,7 +22,8 @@ public class Student extends Person
     private String fullName;
     private BooleanProperty registered;
     private BufferedImage studentImage;
-    
+    private double percentageAbsence = 0;
+
     /**
      * The default constructor for the student class.
      *
@@ -45,8 +48,7 @@ public class Student extends Person
         this.fullName = firstName + " " + lastName;
         setInitRegister(lastCheckIn, lastCheckout);
         this.studentImage = studentImage;
-    } 
-
+    }
 
     /**
      * Get the value of studentImage
@@ -159,6 +161,21 @@ public class Student extends Person
     public String getFullName()
     {
         return fullName;
+    }
+
+    public double getPercentageAbsence()
+    {
+        return percentageAbsence;
+    }
+
+    public void setPercentageAbsence(LocalDate from, LocalDate to, List<Absence> absence)
+    {
+        int x = absence.size()+1;
+        
+        setTotalAbsence(x);
+        long diff = DAYS.between(from, to);
+        diff = diff / 7 * 5 * 5;
+        this.percentageAbsence = diff / x;
     }
 
 }
