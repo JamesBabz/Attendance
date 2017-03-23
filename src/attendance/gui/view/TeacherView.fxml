@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" onMouseDragged="#drag" onMousePressed="#setOffset" prefHeight="492.0" prefWidth="600.0" styleClass="background" stylesheets="@css/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendance.gui.controller.TeacherViewController">
+
+   <children>
+      <TableView fx:id="tblStudentAbs" layoutX="15.0" layoutY="175.0" onMouseClicked="#changeStudentAbsence" prefHeight="355.0" prefWidth="570.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
+        <columns>
+            <TableColumn fx:id="colPictures" prefWidth="170.66665649414062" text="Pictures" />
+          <TableColumn fx:id="colStudent" maxWidth="312.0" minWidth="-1.0" prefWidth="293.3333435058594" text="Student" />
+          <TableColumn fx:id="colAbsence" prefWidth="90.0" text="Absence" />
+        </columns>
+      </TableView>
+      <ComboBox fx:id="comboClass" layoutX="15.0" layoutY="87.0" prefHeight="25.0" prefWidth="84.0" promptText="Class" styleClass="dropdownblue" AnchorPane.leftAnchor="15.0" />
+      <ComboBox fx:id="comboSemester" layoutX="109.0" layoutY="87.0" onAction="#handleSemesterSelect" prefHeight="25.0" prefWidth="84.0" promptText="Overall" styleClass="dropdownblue" />
+      <Label layoutX="12.0" layoutY="52.0" text="Welcome" AnchorPane.topAnchor="50.0">
+         <font>
+            <Font size="15.0" />
+         </font></Label>
+      <Label fx:id="lblUsername" layoutX="80.0" layoutY="53.0" text="Label" AnchorPane.topAnchor="50.0">
+         <font>
+            <Font size="15.0" />
+         </font></Label>
+      <Button fx:id="closeButton" layoutX="384.0" layoutY="16.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="4.0" prefWidth="10.0" styleClass="roundbutton, buttonhoverred, closebuttoncolor" textAlignment="JUSTIFY" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+         <font>
+            <Font size="9.0" />
+         </font>
+      </Button>
+      <TextField fx:id="txtSearch" layoutX="465.0" layoutY="87.0" prefHeight="25.0" prefWidth="122.0" promptText="Search" AnchorPane.rightAnchor="15.0" />
+      <ImageView fx:id="imageLogo" fitHeight="49.0" fitWidth="139.0" layoutX="-1.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+      <DatePicker fx:id="dateFirstDate" layoutX="203.0" layoutY="87.0" prefHeight="25.0" prefWidth="120.0" promptText="From date" />
+      <DatePicker fx:id="dateSecondDate" layoutX="333.0" layoutY="87.0" prefHeight="25.0" prefWidth="120.0" promptText="To date" />
+   </children>
+</AnchorPane>
