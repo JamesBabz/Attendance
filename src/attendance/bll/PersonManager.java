@@ -7,6 +7,7 @@ import attendance.be.Student;
 import attendance.be.Teacher;
 import attendance.dal.PersonDAO;
 import attendance.dal.DBManager;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -67,6 +68,11 @@ public class PersonManager {
         return dbManager.getPeople();
     }
 
+    public void updateStudentImage(Student student, String imagePath) throws SQLException, FileNotFoundException, IOException
+    {
+        dbManager.updateStudentImage(student, imagePath);
+    }
+    
     public void updateCheckIn(Student student) throws SQLException {
         dbManager.updateCheckIn(student);
     }
@@ -77,6 +83,10 @@ public class PersonManager {
     
     public List<Lecture> getAllLectures(){
         return dbManager.getAllLectures();
+    }
+    
+    public void addAbsence(Absence absence) throws SQLException{
+        dbManager.addAbsence(absence);
     }
 
 }
