@@ -7,6 +7,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  *
@@ -23,6 +25,7 @@ public class Student extends Person
     private BooleanProperty registered;
     private BufferedImage studentImage;
     private double percentageAbsence = 0;
+    private ImageView profilePic;
 
     /**
      * The default constructor for the student class.
@@ -177,5 +180,17 @@ public class Student extends Person
         diff = diff / 7 * 5 * 5;
         this.percentageAbsence = diff / x;
     }
+
+    public ImageView getProfilePic()
+    {
+        return profilePic;
+    }
+
+    public void setProfilePic(ImageView profilePic)
+    {
+        this.profilePic = profilePic;
+    }
+    
+    
 
 }
