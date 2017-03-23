@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -30,6 +29,7 @@ import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -123,7 +123,8 @@ public class TeacherViewController extends Dragable implements Initializable
         tblStudentAbs.setItems(allStudents);
         colStudent.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         colAbsenceInP.setCellValueFactory(new PropertyValueFactory<>("PercentageAbsence"));
-
+        colPictures.setCellValueFactory(new PropertyValueFactory<>("profilePic"));
+        imageThing();
         addCheckBoxes();
 
         updateDateInfo();
@@ -139,7 +140,6 @@ public class TeacherViewController extends Dragable implements Initializable
         absence.clear();
         absence.addAll(manager.getAllAbsence(startDate, endDate));
         updateTable();
-        
 
     }
 
@@ -356,6 +356,28 @@ public class TeacherViewController extends Dragable implements Initializable
             catch (SQLException ex)
             {
                 Logger.getLogger(TeacherViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    private void imageThing()
+    {
+        int x = 0;
+        for (Student student : studentList)
+        {
+            Image image = SwingFXUtils.toFXImage(student, null);
+//    imgViewStudent.setImage(image);
+//            Image img = new Image("attendance/gui/view/images/Monkey.png");
+            ImageView imgV = new ImageView(img);
+            imgV.setFitWidth(100);
+            imgV.setPreserveRatio(true);
+            imgV.setSmooth(true);
+            imgV.setCache(true);
+            student.setProfilePic(imgV);
+            x++;
+            if (x >= 20)
+            {
+                break;
             }
         }
     }
