@@ -14,6 +14,7 @@
             <TableColumn fx:id="colPictures" prefWidth="170.66665649414062" text="Pictures" />
           <TableColumn fx:id="colStudent" maxWidth="312.0" minWidth="-1.0" prefWidth="293.3333435058594" text="Student" />
           <TableColumn fx:id="colAbsence" prefWidth="90.0" text="Absence" />
+            <TableColumn fx:id="colAbsenceInP" prefWidth="90.0" text="Absence" visible="false" />
         </columns>
       </TableView>
       <ComboBox fx:id="comboClass" layoutX="15.0" layoutY="87.0" prefHeight="25.0" prefWidth="84.0" promptText="Class" styleClass="dropdownblue" AnchorPane.leftAnchor="15.0" />
@@ -33,7 +34,7 @@
       </Button>
       <TextField fx:id="txtSearch" layoutX="465.0" layoutY="87.0" prefHeight="25.0" prefWidth="122.0" promptText="Search" AnchorPane.rightAnchor="15.0" />
       <ImageView fx:id="imageLogo" fitHeight="49.0" fitWidth="139.0" layoutX="-1.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-      <DatePicker fx:id="dateFirstDate" layoutX="203.0" layoutY="87.0" prefHeight="25.0" prefWidth="120.0" promptText="From date" />
-      <DatePicker fx:id="dateSecondDate" layoutX="333.0" layoutY="87.0" prefHeight="25.0" prefWidth="120.0" promptText="To date" />
+      <DatePicker fx:id="dateFirstDate" layoutX="203.0" layoutY="87.0" onAction="#handleFirstDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="From date" />
+      <DatePicker fx:id="dateSecondDate" layoutX="333.0" layoutY="87.0" onAction="#handleSecondDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="To date" />
    </children>
 </AnchorPane>
