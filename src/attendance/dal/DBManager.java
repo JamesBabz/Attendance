@@ -203,7 +203,6 @@ public final class DBManager
     {
         java.sql.Date sDate = java.sql.Date.valueOf(startDate);
         java.sql.Date eDate = java.sql.Date.valueOf(endDate);
-        System.out.println(eDate);
         String sql = "SELECT * FROM Absence WHERE Date >= '" + sDate + "' AND Date <= '" + eDate + "'";
         try (Connection con = cm.getConnection())
         {
