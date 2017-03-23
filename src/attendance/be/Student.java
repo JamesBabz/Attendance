@@ -1,8 +1,10 @@
 package attendance.be;
 
+import java.awt.image.BufferedImage;
 import java.sql.Timestamp;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.image.Image;
 
 /**
  *
@@ -17,7 +19,8 @@ public class Student extends Person
     private Timestamp lastCheckOut;
     private String fullName;
     private BooleanProperty registered;
-
+    private BufferedImage studentImage;
+    
     /**
      * The default constructor for the student class.
      *
@@ -31,15 +34,38 @@ public class Student extends Person
      * @param className The student's class name, that is the name of the class
      * @param lastCheckIn in which the student participates. e.g. A
      * @param lastCheckout
+     * @param studentImage
      */
-    public Student(int id, String firstName, String lastName, String email, String username, String password, String phoneNum, String className, Timestamp lastCheckIn, Timestamp lastCheckout)
+    public Student(int id, String firstName, String lastName, String email, String username, String password, String phoneNum, String className, Timestamp lastCheckIn, Timestamp lastCheckout, BufferedImage studentImage)
     {
         super(id, firstName, lastName, email, username, password, phoneNum);
         this.className = className;
         this.lastCheckIn = lastCheckIn;
         this.lastCheckOut = lastCheckout;
-        fullName = firstName + " " + lastName;
+        this.fullName = firstName + " " + lastName;
         setInitRegister(lastCheckIn, lastCheckout);
+        this.studentImage = studentImage;
+    } 
+
+
+    /**
+     * Get the value of studentImage
+     *
+     * @return the value of studentImage
+     */
+    public BufferedImage getStudentImage()
+    {
+        return studentImage;
+    }
+
+    /**
+     * Set the value of studentImage
+     *
+     * @param studentImage new value of studentImage
+     */
+    public void setStudentImage(BufferedImage studentImage)
+    {
+        this.studentImage = studentImage;
     }
 
     private void setInitRegister(Timestamp lastCheckIn1, Timestamp lastCheckout)
