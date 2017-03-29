@@ -12,10 +12,13 @@
       <TableView fx:id="tblStudentAbs" layoutX="15.0" layoutY="175.0" onMouseClicked="#changeStudentAbsence" prefHeight="526.0" prefWidth="909.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
         <columns>
             <TableColumn fx:id="colPictures" prefWidth="170.66665649414062" text="Pictures" />
-          <TableColumn fx:id="colStudent" maxWidth="312.0" minWidth="-1.0" prefWidth="293.3333435058594" text="Student" />
-          <TableColumn fx:id="colAbsence" prefWidth="90.0" text="Absence" />
+          <TableColumn fx:id="colStudent" text="Student" />
+          <TableColumn fx:id="colAbsence" text="Absence" />
             <TableColumn fx:id="colAbsenceInP" prefWidth="90.0" text="Absence" visible="false" />
         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
       <ComboBox fx:id="comboClass" layoutX="15.0" layoutY="87.0" prefHeight="25.0" prefWidth="84.0" promptText="Class" styleClass="dropdownblue" AnchorPane.leftAnchor="15.0" />
       <ComboBox fx:id="comboSemester" layoutX="109.0" layoutY="87.0" onAction="#handleSemesterSelect" prefHeight="25.0" prefWidth="84.0" promptText="Overall" styleClass="dropdownblue" />
