@@ -32,7 +32,10 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -49,6 +52,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.scene.control.Alert;
+import javafx.stage.StageStyle;
 
 /**
  * The controller for the teacher view.
@@ -97,6 +101,8 @@ public class TeacherViewController extends Dragable implements Initializable
     LocalDate secondDate;
     @FXML
     private TableColumn<Student, Double> colAbsenceInP;
+    @FXML
+    private Button logoutBtn;
 
     /**
      * The default constructor for the TeacherViewController.
@@ -394,6 +400,38 @@ public class TeacherViewController extends Dragable implements Initializable
 //                break;
 //            }
         }
+    }
+    
+ 
+     /**
+     * Changes view to login screen, whenever the Log-out button is pressed
+     * @param event
+     * @throws IOException 
+     */
+    @FXML
+    public void handleLogOut(ActionEvent event) throws IOException
+    {
+        gotoLogin("/attendance/gui/view/LoginView.fxml");
+    }
+
+    
+     /**
+     * Set the scene to login-view.
+     * @param viewPath
+     * @throws IOException 
+     */
+    private void gotoLogin(String viewPath) throws IOException {
+      Stage primaryStage = (Stage) lblUsername.getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
+        Parent root = loader.load();
+        primaryStage.close();
+
+        Stage newStage = new Stage(StageStyle.UNDECORATED);
+        newStage.setScene(new Scene(root));
+
+        newStage.initOwner(primaryStage);
+
+        newStage.show();
     }
 
 }
