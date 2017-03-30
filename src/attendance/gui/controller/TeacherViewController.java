@@ -26,6 +26,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -71,6 +73,9 @@ public class TeacherViewController extends Dragable implements Initializable
     private final List<Absence> absence;
     private Student selectedStudent;
     private final int IMAGESIZE = 150;
+    private LocalDate firstDate;
+    private LocalDate secondDate;
+    
 
     @FXML
     private Label lblUsername;
@@ -96,13 +101,12 @@ public class TeacherViewController extends Dragable implements Initializable
     private DatePicker dateFirstDate;
     @FXML
     private DatePicker dateSecondDate;
-
-    LocalDate firstDate;
-    LocalDate secondDate;
     @FXML
     private TableColumn<Student, Double> colAbsenceInP;
     @FXML
     private Button logoutBtn;
+    @FXML
+    private Label lblStudentAttendance;
 
     /**
      * The default constructor for the TeacherViewController.
@@ -142,6 +146,9 @@ public class TeacherViewController extends Dragable implements Initializable
         setLogo();
         setSemester();
         setClass();
+        
+        calculateAttendingStudents();
+
 
     }
 
@@ -182,10 +189,10 @@ public class TeacherViewController extends Dragable implements Initializable
     private void search()
     {
         txtSearch.textProperty().addListener((ObservableValue<? extends String> listener, String oldQuery, String newQuery)
-                -> 
-                {
-                    searchedStudents.setAll(model.search(studentList, newQuery));
-                    tblStudentAbs.setItems(searchedStudents);
+                ->
+        {
+            searchedStudents.setAll(model.search(studentList, newQuery));
+            tblStudentAbs.setItems(searchedStudents);
         });
     }
 
@@ -401,12 +408,12 @@ public class TeacherViewController extends Dragable implements Initializable
 //            }
         }
     }
-    
- 
-     /**
+
+    /**
      * Changes view to login screen, whenever the Log-out button is pressed
+     *
      * @param event
-     * @throws IOException 
+     * @throws IOException
      */
     @FXML
     public void handleLogOut(ActionEvent event) throws IOException
@@ -414,14 +421,15 @@ public class TeacherViewController extends Dragable implements Initializable
         gotoLogin("/attendance/gui/view/LoginView.fxml");
     }
 
-    
-     /**
+    /**
      * Set the scene to login-view.
+     *
      * @param viewPath
-     * @throws IOException 
+     * @throws IOException
      */
-    private void gotoLogin(String viewPath) throws IOException {
-      Stage primaryStage = (Stage) lblUsername.getScene().getWindow();
+    private void gotoLogin(String viewPath) throws IOException
+    {
+        Stage primaryStage = (Stage) lblUsername.getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
         Parent root = loader.load();
         primaryStage.close();
@@ -432,6 +440,23 @@ public class TeacherViewController extends Dragable implements Initializable
         newStage.initOwner(primaryStage);
 
         newStage.show();
+    }
+
+    private void calculateAttendingStudents()
+    {
+        int totalStudents = studentList.size();
+        int attendingStudents = 0;
+        
+        for (Student student : studentList)
+        {
+            
+            if (student.isRegistered())
+            {
+                attendingStudents++;
+            }
+        }
+
+        lblStudentAttendance.setText("" + attendingStudents + "/" + totalStudents);
     }
 
 }
