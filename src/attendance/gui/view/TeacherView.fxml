@@ -39,5 +39,6 @@
       <ImageView fx:id="imageLogo" fitHeight="49.0" fitWidth="139.0" layoutX="-1.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
       <DatePicker fx:id="dateFirstDate" layoutX="203.0" layoutY="87.0" onAction="#handleFirstDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="From date" />
       <DatePicker fx:id="dateSecondDate" layoutX="333.0" layoutY="87.0" onAction="#handleSecondDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="To date" />
+      <Button fx:id="logoutBtn" layoutX="393.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log-out" textOverrun="CLIP" underline="true" />
    </children>
 </AnchorPane>
