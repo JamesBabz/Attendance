@@ -24,10 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -75,7 +77,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private final int IMAGESIZE = 150;
     private LocalDate firstDate;
     private LocalDate secondDate;
-    
+    Thread thread;
 
     @FXML
     private Label lblUsername;
@@ -113,6 +115,8 @@ public class TeacherViewController extends Dragable implements Initializable
      */
     public TeacherViewController() throws SQLException, IOException
     {
+        this.thread = new Thread(imageThing());
+
         this.manager = new PersonManager();
         this.studentList = manager.getAllStudents();
         this.allStudents = FXCollections.observableArrayList();
@@ -138,7 +142,6 @@ public class TeacherViewController extends Dragable implements Initializable
         colPictures.setMinWidth(IMAGESIZE);
         colPictures.setMaxWidth(IMAGESIZE);
         colPictures.setEditable(false);
-        imageThing();
         addCheckBoxes();
 
         updateDateInfo();
@@ -146,10 +149,9 @@ public class TeacherViewController extends Dragable implements Initializable
         setLogo();
         setSemester();
         setClass();
-        
+
         calculateAttendingStudents();
-
-
+        thread.start();
     }
 
     public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException
@@ -380,33 +382,34 @@ public class TeacherViewController extends Dragable implements Initializable
         }
     }
 
-    private void imageThing()
+    private Runnable imageThing()
     {
-        int x = 0;
-        for (Student student : studentList)
+        return new Thread(() ->
         {
-            Image image;
-            if (student.getStudentImage() != null)
+            int x = 0;
+            Image studentImage;
+            for (Student student : studentList)
             {
-                image = SwingFXUtils.toFXImage(student.getStudentImage(), null);
-            }
-            else
-            {
-                image = new Image("attendance/gui/view/images/profile-placeholder.png");
+
+                if (student.getStudentImage() != null)
+                {
+                    studentImage = SwingFXUtils.toFXImage(student.getStudentImage(), null);
+                }
+                else
+                {
+                    studentImage = new Image("attendance/gui/view/images/profile-placeholder.png");
+                }
+
+                ImageView imgV = new ImageView(studentImage);
+                imgV.setFitWidth(IMAGESIZE);
+                imgV.setPreserveRatio(true);
+                imgV.setSmooth(true);
+                imgV.setCache(true);
+                student.setProfilePic(imgV);
+                x++;
 
             }
-            ImageView imgV = new ImageView(image);
-            imgV.setFitWidth(IMAGESIZE);
-            imgV.setPreserveRatio(true);
-            imgV.setSmooth(true);
-            imgV.setCache(true);
-            student.setProfilePic(imgV);
-            x++;
-//            if (x >= 20)
-//            {
-//                break;
-//            }
-        }
+        });
     }
 
     /**
@@ -446,10 +449,10 @@ public class TeacherViewController extends Dragable implements Initializable
     {
         int totalStudents = studentList.size();
         int attendingStudents = 0;
-        
+
         for (Student student : studentList)
         {
-            
+
             if (student.isRegistered())
             {
                 attendingStudents++;
