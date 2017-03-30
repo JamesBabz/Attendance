@@ -29,8 +29,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -39,6 +43,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * FXML Controller class
@@ -311,4 +316,37 @@ public class StudentViewController extends Dragable implements Initializable
         return today;
     }
 
+    
+    /**
+     * Changes view to login screen, whenever the Log-out button is pressed
+     * @param event
+     * @throws IOException 
+     */
+    @FXML
+    public void handleLogOut(ActionEvent event) throws IOException
+    {
+        goLoginScreen("/attendance/gui/view/LoginView.fxml");
+    }
+
+    
+    
+    /**
+     * Set the scene to login-view.
+     * @param viewPath
+     * @throws IOException 
+     */
+    private void goLoginScreen(String viewPath) throws IOException {
+      Stage primaryStage = (Stage) lblUser.getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
+        Parent root = loader.load();
+        primaryStage.close();
+
+        Stage newStage = new Stage(StageStyle.UNDECORATED);
+        newStage.setScene(new Scene(root));
+
+        newStage.initOwner(primaryStage);
+
+        newStage.show();
+    }
+    
 }
