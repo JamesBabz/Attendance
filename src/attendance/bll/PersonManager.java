@@ -18,12 +18,14 @@ import java.util.List;
  *
  * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
-public class PersonManager {
+public class PersonManager
+{
 
     PersonDAO personDAO = PersonDAO.getInstance();
     DBManager dbManager;
 
-    public PersonManager() throws SQLException, IOException {
+    public PersonManager() throws SQLException, IOException
+    {
         this.dbManager = new DBManager();
     }
 
@@ -32,7 +34,8 @@ public class PersonManager {
      *
      * @return
      */
-    public List<Student> getAllStudents() {
+    public List<Student> getAllStudents()
+    {
         return dbManager.getStudents();
     }
 
@@ -41,7 +44,8 @@ public class PersonManager {
      *
      * @return
      */
-    public List<Teacher> getAllTeachers() {
+    public List<Teacher> getAllTeachers()
+    {
         return dbManager.getTeachers();
     }
 
@@ -51,11 +55,13 @@ public class PersonManager {
      * @param sID
      * @return
      */
-    public List<Absence> getSingleStudentAbsence(int sID) throws SQLException {
+    public List<Absence> getSingleStudentAbsence(int sID) throws SQLException
+    {
         return dbManager.getSingleStudentAbsence(sID);
     }
 
-    public List<Absence> getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException {
+    public List<Absence> getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException
+    {
         return dbManager.getAllAbsence(startDate, endDate);
     }
 
@@ -64,7 +70,8 @@ public class PersonManager {
      *
      * @return
      */
-    public List<Person> getAllPeople() {
+    public List<Person> getAllPeople()
+    {
         return dbManager.getPeople();
     }
 
@@ -72,20 +79,24 @@ public class PersonManager {
     {
         dbManager.updateStudentImage(student, imagePath);
     }
-    
-    public void updateCheckIn(Student student) throws SQLException {
+
+    public void updateCheckIn(Student student) throws SQLException
+    {
         dbManager.updateCheckIn(student);
     }
 
-    public void updateCheckOut(Student student) throws SQLException {
+    public void updateCheckOut(Student student) throws SQLException
+    {
         dbManager.updateCheckOut(student);
     }
-    
-    public List<Lecture> getAllLectures(){
+
+    public List<Lecture> getAllLectures()
+    {
         return dbManager.getAllLectures();
     }
-    
-    public void addAbsence(Absence absence) throws SQLException{
+
+    public void addAbsence(Absence absence) throws SQLException
+    {
         dbManager.addAbsence(absence);
     }
 
