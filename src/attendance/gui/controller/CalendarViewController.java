@@ -100,7 +100,7 @@ public class CalendarViewController implements Initializable
     {
         fillCalendar();
         cmbMonth.setItems(months);
-        cmbMonth.getSelectionModel().select(Calendar.MONTH);
+        cmbMonth.getSelectionModel().select(month);
         cmbYear.setItems(years);
         cmbYear.getSelectionModel().select(0);
     }
