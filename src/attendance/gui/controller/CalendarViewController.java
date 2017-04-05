@@ -9,6 +9,7 @@ import attendance.be.Absence;
 import attendance.be.Lecture;
 import attendance.be.Semester;
 import attendance.bll.PersonManager;
+import attendance.gui.model.LectureModel;
 import attendance.gui.model.StudentModel;
 import java.io.IOException;
 import java.net.URL;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -48,7 +47,8 @@ public class CalendarViewController implements Initializable
     private final String todayStyle;
     private final String absentStyle;
     private final String attendetStyle;
-    private final StudentModel model;
+    private final StudentModel studentModel;
+    private final LectureModel lectureModel;
     private final PersonManager manager;
     private final ObservableList<String> months;
     private final ObservableList<Integer> years;
@@ -70,7 +70,8 @@ public class CalendarViewController implements Initializable
         this.attendetStyle = "-fx-background-color: lightgreen";
         this.absentStyle = "-fx-background-color: #FF0033";
         this.todayStyle = "-fx-border-color: red;";
-        this.model = StudentModel.getInstance();
+        this.studentModel = StudentModel.getInstance();
+        this.lectureModel = LectureModel.getInstance();
         this.manager = new PersonManager();
         this.cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"));
         year = cal.get(Calendar.YEAR);
@@ -119,7 +120,7 @@ public class CalendarViewController implements Initializable
         cal.set(year, month, 1); // Sets the month/year for the calendar to show
         String dayOfWeek = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.ENGLISH); // Gets the shortened name for the day
         int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // Gets number of days in the selected month
-        Date firstSemester = new Semester(1, model.getCurrentUser().getClassName()).getStartDate();
+        Date firstSemester = new Semester(1, studentModel.getCurrentUser().getClassName()).getStartDate();
         int gridX = 0;
         int gridY = 1;
         switch (dayOfWeek)
@@ -190,8 +191,8 @@ public class CalendarViewController implements Initializable
 
     private void checkIfAbsent(int i, Label label)
     {
-        List<Absence> missedClasses = model.getMissedClasses();
-        List<Lecture> missedLectures = model.getLectures();
+        List<Absence> missedClasses = studentModel.getMissedClasses();
+        List<Lecture> missedLectures = lectureModel.getLectures();
         List<String> classNames = new ArrayList<>();;
 
         if (missedClasses.isEmpty())
