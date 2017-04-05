@@ -155,9 +155,8 @@ public class TeacherViewController extends Dragable implements Initializable
         search();
         setLogo();
         setSemester();
-        setClass();
         viewStudentsByClass();
-
+        setClass();
 
 
         calculateAttendingStudents();
