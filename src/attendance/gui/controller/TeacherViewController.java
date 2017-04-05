@@ -283,10 +283,12 @@ public class TeacherViewController extends Dragable implements Initializable
     {
 
         comboSemester.getItems().addAll(
+                "All Semesters",
                 "1. Semester",
                 "2. Semester",
                 "3. Semester",
-                "4. Semester"
+                "4. Semester",
+                "5. Semester"
         );
     }
 
@@ -295,6 +297,7 @@ public class TeacherViewController extends Dragable implements Initializable
         comboClass.getItems().addAll(
                 getAllClassNames()
         );
+        comboClass.getSelectionModel().clearAndSelect(0);
     }
 
     private List<String> getAllClassNames()
@@ -307,6 +310,7 @@ public class TeacherViewController extends Dragable implements Initializable
 
         Set<String> distinctClassNames = new HashSet<>(classNames);
         classNames.clear();
+        classNames.add("All Classes");
         classNames.addAll(distinctClassNames);
         classNames.removeAll(Collections.singleton(null));
         Collections.sort(classNames);
@@ -464,7 +468,15 @@ public class TeacherViewController extends Dragable implements Initializable
                         }
                     }
                 }
-                tblStudentAbs.setItems(studentsByClassList);
+                
+                if (comboClass.getValue().matches("All Classes"))
+                {
+                    tblStudentAbs.setItems(allStudents);
+                }
+                else
+                {
+                    tblStudentAbs.setItems(studentsByClassList);
+                }
             }
         });
     }
