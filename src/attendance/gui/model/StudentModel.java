@@ -20,7 +20,6 @@ public class StudentModel
 
     private Student currentUser;
     private List<Absence> missedClasses;
-    private List<Lecture> lectures;
 
     private static StudentModel instance;
 
@@ -52,18 +51,6 @@ public class StudentModel
             this.missedClasses.add(missedClass);
         }
     }
-
-    public List<Lecture> getLectures()
-    {
-        return lectures;
-    }
-
-    public void setLectures(List<Lecture> lectures)
-    {
-        this.lectures = lectures;
-    }
-
-
 
     public Student getCurrentUser()
     {

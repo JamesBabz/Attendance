@@ -7,6 +7,7 @@ package attendance.gui.controller;
 
 import attendance.be.Absence;
 import attendance.be.Lecture;
+import attendance.gui.model.LectureModel;
 import attendance.gui.model.StudentModel;
 import java.io.IOException;
 import java.net.URL;
@@ -26,7 +27,6 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -40,7 +40,10 @@ import javafx.scene.paint.Color;
 public class PieChartViewController implements Initializable
 {
 
-    private final StudentModel model;
+    private final ObservableList data;
+    private final StudentModel studentModel;
+    private final LectureModel lectureModel;
+
 
     List<String> lectureAbsence;
     List<Double> lectureValue;
@@ -56,7 +59,12 @@ public class PieChartViewController implements Initializable
     public PieChartViewController() throws SQLException, IOException
     {
         this.pieChartData = FXCollections.observableArrayList();
-        this.model = StudentModel.getInstance();
+
+        this.studentModel = StudentModel.getInstance();
+        this.lectureModel = LectureModel.getInstance();
+        this.data = FXCollections.observableArrayList();
+//        this.absences = manager.getAllAbsence(model.getCurrentUser().getId());
+
         lectureAbsence = new ArrayList<>();
         lectureValue = new ArrayList<>();
 
@@ -106,8 +114,8 @@ public class PieChartViewController implements Initializable
 
     private void updateLectureAbsence()
     {
-        List<Lecture> lectures = model.getLectures();
-        List<Absence> missedClasses = model.getMissedClasses();
+        List<Lecture> lectures = lectureModel.getLectures();
+        List<Absence> missedClasses = studentModel.getMissedClasses();
 
         for (Lecture lecture : lectures)
         {
