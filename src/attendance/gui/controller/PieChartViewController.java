@@ -177,10 +177,9 @@ public class PieChartViewController implements Initializable
     private int getMonthLectures()
     {
         Calendar calendar = Calendar.getInstance();
-        CalendarViewController cvc = new CalendarViewController();
         int year = calendar.get(Calendar.YEAR);
         Calendar dayInWeek = Calendar.getInstance();
-        dayInWeek.set(Calendar.MONTH, cvc.getMonth() + 1);
+        dayInWeek.set(Calendar.MONTH, studentModel.getMonth() + 1);
         int daysInMonth = dayInWeek.getActualMaximum(Calendar.DAY_OF_MONTH);
         int lecturesInMonth = 0;
         for (int i = 1; i < daysInMonth; i++)
@@ -212,7 +211,7 @@ public class PieChartViewController implements Initializable
                     today = "Weekend";
                     break;
             }
-            for (Lecture lecture : model.getLectures())
+            for (Lecture lecture : lectureModel.getLectures())
             {
                 if (today.equals(lecture.getDay()))
                 {

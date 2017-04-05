@@ -267,8 +267,8 @@ public class CalendarViewController implements Initializable
         return stringToPrint;
     }
     
-    public int getMonth()
+    public void setMonth()
     {
-        return month;
+        studentModel.setMonth(month);
     }
 }
