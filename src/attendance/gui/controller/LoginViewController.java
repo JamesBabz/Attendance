@@ -46,6 +46,8 @@ public class LoginViewController extends Dragable implements Initializable
     private final List<Person> people;
     private final List<Student> students;
     private final List<Teacher> teachers;
+    private ViewGenerator vg;
+
 
     @FXML
     private TextField txtUser;
@@ -62,6 +64,7 @@ public class LoginViewController extends Dragable implements Initializable
 
     public LoginViewController() throws SQLException, IOException
     {
+        this.vg = new ViewGenerator();
         this.studentModel = StudentModel.getInstance();
         this.teacherModel = TeacherModel.getInstance();
         this.lectureModel = LectureModel.getInstance();
@@ -155,7 +158,7 @@ public class LoginViewController extends Dragable implements Initializable
                 // A variable to hold the name of the view.
                 String userType = person.getClass().getSimpleName();
 
-                loadStage("/attendance/gui/view/" + userType + "View.fxml");
+                vg.loadStage((Stage) txtUser.getScene().getWindow(), "/attendance/gui/view/" + userType + "View.fxml");
                 return;
             }
         }
