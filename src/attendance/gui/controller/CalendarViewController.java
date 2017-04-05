@@ -8,8 +8,11 @@ package attendance.gui.controller;
 import attendance.be.Absence;
 import attendance.be.Lecture;
 import attendance.be.Semester;
+import attendance.bll.PersonManager;
 import attendance.gui.model.StudentModel;
+import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -44,6 +49,7 @@ public class CalendarViewController implements Initializable
     private final String absentStyle;
     private final String attendetStyle;
     private final StudentModel model;
+    private final PersonManager manager;
     private final ObservableList<String> months;
     private final ObservableList<Integer> years;
     private final String[] DifferentClasses;
@@ -55,7 +61,7 @@ public class CalendarViewController implements Initializable
     @FXML
     private ComboBox<Integer> cmbYear;
 
-    public CalendarViewController()
+    public CalendarViewController() throws SQLException, IOException
     {
         this.DifferentClasses = new String[]
         {
@@ -65,6 +71,7 @@ public class CalendarViewController implements Initializable
         this.absentStyle = "-fx-background-color: #FF0033";
         this.todayStyle = "-fx-border-color: red;";
         this.model = StudentModel.getInstance();
+        this.manager = new PersonManager();
         this.cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"));
         year = cal.get(Calendar.YEAR);
         month = cal.get(Calendar.MONTH);
@@ -89,7 +96,7 @@ public class CalendarViewController implements Initializable
                 year - 3,
                 year - 4
         );
-
+       
     }
 
     /**
@@ -98,6 +105,7 @@ public class CalendarViewController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+
         fillCalendar();
         cmbMonth.setItems(months);
         cmbMonth.getSelectionModel().select(month);
@@ -105,7 +113,7 @@ public class CalendarViewController implements Initializable
         cmbYear.getSelectionModel().select(0);
     }
 
-    private void fillCalendar()
+    public void fillCalendar()
     {
         gridCalendar.getChildren().remove(5, gridCalendar.getChildren().size()); // Clears everything except the weekdays
         cal.set(year, month, 1); // Sets the month/year for the calendar to show

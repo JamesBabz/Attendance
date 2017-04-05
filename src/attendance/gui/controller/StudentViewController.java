@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +39,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -89,6 +91,16 @@ public class StudentViewController extends Dragable implements Initializable
         {
             editWrongCheckOut();
         }
+        giveAbsenceWhenSick();
+        try
+        {
+            model.setMissedClasses(manager.getSingleStudentAbsence(currentUser.getId()));
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         lblUser.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
 
         if (currentUser.getLastCheckIn() != null)
@@ -311,73 +323,79 @@ public class StudentViewController extends Dragable implements Initializable
 
         Timestamp lastCO = currentUser.getLastCheckOut();
         calCO.setTime(lastCO);
-        int daysApart = calCI.get(Calendar.DAY_OF_YEAR) - calCO.get(Calendar.DAY_OF_YEAR);
 
-        //If it has only been one day
-        if (daysApart == 1)
+        Calendar newCO = calCI;
+        newCO.set(Calendar.HOUR_OF_DAY, 23);
+        newCO.set(Calendar.MINUTE, 59);
+        Timestamp coMili = new Timestamp(newCO.getTimeInMillis());
+        currentUser.setLastCheckOut(coMili);
+        try
         {
-            Calendar newCO = calCI;
-            newCO.set(Calendar.HOUR_OF_DAY, 23);
-            newCO.set(Calendar.MINUTE, 59);
-            Timestamp coMili = new Timestamp(newCO.getTimeInMillis());
-            currentUser.setLastCheckOut(coMili);
-            try
-            {
-                manager.updateCheckOut(currentUser);
-            }
-            catch (SQLException ex)
-            {
-                Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            lastCO = currentUser.getLastCheckOut();
-            calCO.setTime(lastCO);
+            manager.updateCheckOut(currentUser);
         }
-//        else if (daysApart > 1)
-//        {
-//            for (int i = 0; i < daysApart; i++)
-//            {
-//                System.out.println("fravær");
-//            }
-//        }
-//        else
-//        {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("Error");
-//            alert.setHeaderText("Error");
-//            alert.setContentText("Something went wrong");
-//            alert.showAndWait();
-//        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void giveAbsenceWhenSick()
+    {
+        Calendar calNow = Calendar.getInstance();
+        Calendar calCO = Calendar.getInstance();
+        Timestamp lastCO;
+        lastCO = currentUser.getLastCheckOut();
+        calCO.setTime(lastCO);
         if (calNow.get(Calendar.DAY_OF_YEAR) > calCO.get(Calendar.DAY_OF_YEAR) + 1)
         {
             int remainingDays = calNow.get(Calendar.DAY_OF_YEAR) - calCO.get(Calendar.DAY_OF_YEAR);
             for (int i = 1; i < remainingDays; i++)
             {
                 Calendar current = calCO;
-                i--;
-                do
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                current.add(Calendar.DAY_OF_YEAR, 1);
+
+                while (current.get(Calendar.DAY_OF_WEEK) == 7 || current.get(Calendar.DAY_OF_WEEK) == 1)
                 {
                     current.add(Calendar.DAY_OF_YEAR, 1);
                     i++;
                 }
-                while (current.get(Calendar.DAY_OF_WEEK) == 7 || current.get(Calendar.DAY_OF_WEEK) == 1);
                 if (i == remainingDays)
                 {
                     break;
                 }
                 for (Lecture lecture : getTodaysLectures(current))
                 {
-                    try
+                    if (isUnique(lecture, sdf, current))
                     {
-                        Absence absence = new Absence(currentUser.getId(), lecture.getId(), current.getTime());
-                        manager.addAbsence(absence);
-                    }
-                    catch (SQLException ex)
-                    {
-                        Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        try
+                        {
+                            Absence absence = new Absence(currentUser.getId(), lecture.getId(), current.getTime());
+                            manager.addAbsence(absence);
+                        }
+                        catch (SQLException ex)
+                        {
+                            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
             }
         }
+    }
+
+    private boolean isUnique(Lecture lecture, SimpleDateFormat sdf, Calendar current)
+    {
+        boolean isUnique = true;
+        for (Absence abs : model.getMissedClasses())
+        {
+            if (abs.getStudentId() == currentUser.getId() && abs.getLectureId() == lecture.getId() && abs.getDate().toString().equals(sdf.format(current.getTime())))
+            {
+                isUnique = false;
+            }
+        }
+        return isUnique;
     }
 
 }
