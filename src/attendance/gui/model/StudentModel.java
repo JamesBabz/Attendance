@@ -20,6 +20,7 @@ public class StudentModel
 
     private Student currentUser;
     private List<Absence> missedClasses;
+    private int month;
 
     private static StudentModel instance;
 
@@ -62,4 +63,13 @@ public class StudentModel
         this.currentUser = currentUser;
     }
 
+    public int getMonth()
+    {
+        return month;
+    }
+    
+    public void setMonth(int month)
+    {
+        this.month = month;
+    }
 }
