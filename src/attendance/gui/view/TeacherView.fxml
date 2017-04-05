@@ -14,10 +14,10 @@
 <AnchorPane id="AnchorPane" onMouseDragged="#drag" onMousePressed="#setOffset" prefHeight="670.0" prefWidth="939.0" styleClass="background" stylesheets="@css/Style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendance.gui.controller.TeacherViewController">
 
    <children>
-      <TableView fx:id="tblStudentAbs" layoutX="15.0" layoutY="175.0" onMouseClicked="#changeStudentAbsence" prefHeight="526.0" prefWidth="909.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
+      <TableView fx:id="tblStudentAbs" layoutX="15.0" layoutY="175.0" onMouseClicked="#changeStudentAbsence" prefHeight="526.0" prefWidth="909.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="129.0">
         <columns>
-            <TableColumn fx:id="colPictures" prefWidth="170.66665649414062" text="Pictures" />
-          <TableColumn fx:id="colStudent" text="Student" />
+            <TableColumn fx:id="colPictures" prefWidth="254.0" text="Pictures" />
+          <TableColumn fx:id="colStudent" prefWidth="351.0" text="Student" />
           <TableColumn fx:id="colAbsence" text="Absence" />
             <TableColumn fx:id="colAbsenceInP" prefWidth="90.0" text="Absence" visible="false" />
         </columns>
@@ -25,8 +25,8 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <ComboBox fx:id="comboClass" layoutX="15.0" layoutY="87.0" prefHeight="25.0" prefWidth="84.0" promptText="Class" styleClass="dropdownblue" AnchorPane.leftAnchor="15.0" />
-      <ComboBox fx:id="comboSemester" layoutX="109.0" layoutY="87.0" onAction="#handleSemesterSelect" prefHeight="25.0" prefWidth="84.0" promptText="Overall" styleClass="dropdownblue" />
+      <ComboBox fx:id="comboClass" layoutX="15.0" layoutY="87.0" prefHeight="25.0" prefWidth="109.0" promptText="All Classes" styleClass="dropdownblue" AnchorPane.leftAnchor="15.0" />
+      <ComboBox fx:id="comboSemester" layoutX="133.0" layoutY="87.0" onAction="#handleSemesterSelect" prefHeight="25.0" prefWidth="109.0" promptText="Overall" styleClass="dropdownblue" />
       <Label layoutX="12.0" layoutY="52.0" text="Welcome" AnchorPane.topAnchor="50.0">
          <font>
             <Font size="15.0" />
@@ -40,11 +40,11 @@
             <Font size="9.0" />
          </font>
       </Button>
-      <TextField fx:id="txtSearch" layoutX="465.0" layoutY="87.0" prefHeight="25.0" prefWidth="122.0" promptText="Search" AnchorPane.rightAnchor="15.0" />
+      <TextField fx:id="txtSearch" layoutX="465.0" layoutY="87.0" prefHeight="25.0" prefWidth="173.0" promptText="Search" AnchorPane.rightAnchor="15.0" />
       <ImageView fx:id="imageLogo" fitHeight="49.0" fitWidth="139.0" layoutX="-1.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-      <DatePicker fx:id="dateFirstDate" layoutX="203.0" layoutY="87.0" onAction="#handleFirstDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="From date" />
-      <DatePicker fx:id="dateSecondDate" layoutX="333.0" layoutY="87.0" onAction="#handleSecondDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="To date" />
-      <Button fx:id="logoutBtn" layoutX="393.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log-out" textOverrun="CLIP" underline="true" />
+      <DatePicker fx:id="dateFirstDate" layoutX="250.0" layoutY="87.0" onAction="#handleFirstDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="From date" />
+      <DatePicker fx:id="dateSecondDate" layoutX="380.0" layoutY="87.0" onAction="#handleSecondDateSelect" prefHeight="25.0" prefWidth="120.0" promptText="To date" />
+      <Button fx:id="logoutBtn" layoutX="863.0" layoutY="51.0" mnemonicParsing="false" onAction="#handleLogOut" text="Log-out" textOverrun="CLIP" underline="true" AnchorPane.rightAnchor="17.0" />
       <Label fx:id="lblStudentAttendance" layoutX="511.0" layoutY="63.0" prefHeight="17.0" prefWidth="68.0" text="Students" />
    </children>
 </AnchorPane>
