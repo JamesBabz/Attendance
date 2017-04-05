@@ -43,7 +43,7 @@ public class CalendarViewController implements Initializable
 
     private Calendar cal;
     private int year;
-    private int month;
+    private static int  month;
     private final String todayStyle;
     private final String absentStyle;
     private final String attendetStyle;
@@ -265,5 +265,10 @@ public class CalendarViewController implements Initializable
             }
         }
         return stringToPrint;
+    }
+    
+    public int getMonth()
+    {
+        return month;
     }
 }
