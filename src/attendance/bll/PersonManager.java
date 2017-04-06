@@ -23,7 +23,7 @@ public class PersonManager
     DBManager dbManager;
 
     /**
-     *
+     * The constuctor for the class.
      * @throws SQLException
      * @throws IOException
      */
@@ -68,7 +68,7 @@ public class PersonManager
     }
 
     /**
-     * 
+     * Gets all absence.
      * @param startDate - The from date for retrieving absence
      * @param endDate - The to date for retrieving absence
      * @return - List of absence between two periods
@@ -90,7 +90,6 @@ public class PersonManager
     }
 
     /**
-     *
      * @param student
      * @param imagePath
      * @throws SQLException
@@ -103,7 +102,7 @@ public class PersonManager
     }
 
     /**
-     *
+     * Updates the student's checkin.
      * @param student
      * @throws SQLException
      */
@@ -113,7 +112,7 @@ public class PersonManager
     }
 
     /**
-     *
+     *Updates the student's checkout.
      * @param student
      * @throws SQLException
      */
@@ -123,8 +122,8 @@ public class PersonManager
     }
 
     /**
-     *
-     * @return
+     *Gets all the lectures.
+     * @return all lectures
      */
     public List<Lecture> getAllLectures()
     {
@@ -132,7 +131,7 @@ public class PersonManager
     }
 
     /**
-     *
+     *Add absence to the student
      * @param absence
      * @throws SQLException
      */

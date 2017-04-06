@@ -9,7 +9,6 @@ import attendance.be.Absence;
 import attendance.be.Lecture;
 import attendance.be.Semester;
 import attendance.be.Student;
-import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.StudentModel;
 import attendance.bll.PersonManager;
 import attendance.gui.model.LectureModel;

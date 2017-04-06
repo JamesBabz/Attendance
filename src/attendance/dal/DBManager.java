@@ -5,7 +5,6 @@ import attendance.be.Lecture;
 import attendance.be.Person;
 import attendance.be.Student;
 import attendance.be.Teacher;
-import attendance.bll.DateTimeManager;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -34,7 +33,6 @@ public final class DBManager
 {
 
     private ConnectionManager cm;
-    private DateTimeManager DTMan;
 
     private final List<Student> students;
     private final List<Teacher> teachers;
