@@ -70,7 +70,8 @@ public class TeacherViewController extends Dragable implements Initializable
     private Student selectedStudent;
     private LocalDate firstDate;
     private LocalDate secondDate;
-
+     ObservableList<String> classNames = FXCollections.observableArrayList();
+     
     @FXML
     private Label lblUsername;
     @FXML
@@ -115,6 +116,7 @@ public class TeacherViewController extends Dragable implements Initializable
         this.model = TeacherModel.getInstance();
         allStudents.addAll(studentList);
         absence = new ArrayList<>();
+
     }
 
     /**
@@ -131,7 +133,8 @@ public class TeacherViewController extends Dragable implements Initializable
         colPictures.setMinWidth(IMAGE_SIZE);
         colPictures.setMaxWidth(IMAGE_SIZE);
         colPictures.setEditable(false);
-
+            comboSemester.setDisable(true);
+  
         addCheckBoxes();
         search();
         setLogo();
@@ -189,6 +192,7 @@ public class TeacherViewController extends Dragable implements Initializable
     @FXML
     private void handleSemesterSelect(ActionEvent event)
     {
+     
         if (comboClass.getSelectionModel().getSelectedIndex() != -1)
         {
             int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() + 1;
@@ -199,6 +203,7 @@ public class TeacherViewController extends Dragable implements Initializable
             dateFirstDate.setValue(firstDate);
             dateSecondDate.setValue(secondDate);
         }
+    
     }
 
     @FXML
@@ -475,7 +480,7 @@ public class TeacherViewController extends Dragable implements Initializable
      */
     private ObservableList<String> getAllClassNames()
     {
-        ObservableList<String> classNames = FXCollections.observableArrayList();
+       
         for (Student student : studentList)
         {
             if (student.getClassName() != null && !student.getClassName().contains("_")) // Just cheating to prevent unavailable classes to be displayed.
@@ -491,5 +496,17 @@ public class TeacherViewController extends Dragable implements Initializable
         classNames.removeAll(Collections.singleton(null));
         Collections.sort(classNames);
         return classNames;
+        
+    }
+
+    @FXML
+    private void setSemesterEditable()
+    {
+            comboSemester.setDisable(false);
+            
+            if(comboClass.getValue() == "All Classes" )
+            {
+                comboSemester.setDisable(true);
+            }
     }
 }
