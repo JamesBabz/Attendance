@@ -6,17 +6,20 @@
 package attendance.gui.controller;
 
 import attendance.be.Absence;
+import attendance.be.Lecture;
 import attendance.be.Semester;
 import attendance.be.Student;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.TeacherModel;
 import attendance.bll.PersonManager;
+import attendance.gui.model.LectureModel;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -77,7 +81,9 @@ public class TeacherViewController extends Dragable implements Initializable
     private final int IMAGESIZE = 150;
     private LocalDate firstDate;
     private LocalDate secondDate;
-    Thread thread;
+    private Thread imageThread;
+    private final ViewGenerator vg;
+    private LectureModel lectureModel = LectureModel.getInstance();
 
     @FXML
     private Label lblUsername;
@@ -115,7 +121,8 @@ public class TeacherViewController extends Dragable implements Initializable
      */
     public TeacherViewController() throws SQLException, IOException
     {
-        this.thread = new Thread(imageThing());
+        this.imageThread = new Thread(imageLoader());
+        this.vg = new ViewGenerator();
 
         this.manager = new PersonManager();
         this.studentList = manager.getAllStudents();
@@ -148,10 +155,12 @@ public class TeacherViewController extends Dragable implements Initializable
         search();
         setLogo();
         setSemester();
+        viewStudentsByClass();
         setClass();
 
+
         calculateAttendingStudents();
-        thread.start();
+        imageThread.start();
     }
 
     public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException
@@ -278,30 +287,52 @@ public class TeacherViewController extends Dragable implements Initializable
     {
 
         comboSemester.getItems().addAll(
+                "All Semesters",
                 "1. Semester",
                 "2. Semester",
                 "3. Semester",
-                "4. Semester"
+                "4. Semester",
+                "5. Semester"
         );
     }
 
     private void setClass()
     {
-        comboClass.getItems().addAll(
+        comboClass.setItems(
                 getAllClassNames()
         );
+        for (Lecture lecture : lectureModel.getLectures())
+        {
+            if (TeacherModel.getInstance().getCurrentUser().getId() == lecture.getTeacherId())
+            {
+                if (LocalDateTime.now().getHour() == lecture.getPeriodStart()[0] && LocalDateTime.now().getMinute() >= lecture.getPeriodStart()[1] && (LocalDateTime.now().getDayOfWeek().name() == null ? lecture.getDay() == null : LocalDateTime.now().getDayOfWeek().name().equals(lecture.getDay())))
+                {
+                    comboClass.setValue(lecture.getLectureName());
+                }
+                else
+                {
+                    comboClass.getSelectionModel().clearAndSelect(0);
+                }
+
+            }
+
+        }
     }
 
-    private List<String> getAllClassNames()
+    private ObservableList<String> getAllClassNames()
     {
-        List<String> classNames = new ArrayList<>();
+        ObservableList<String> classNames = FXCollections.observableArrayList();
         for (Student student : studentList)
         {
-            classNames.add(student.getClassName());
+            if (student.getClassName() != null && !student.getClassName().contains("_"))
+            {
+                classNames.add(student.getClassName());
+            }
         }
 
         Set<String> distinctClassNames = new HashSet<>(classNames);
         classNames.clear();
+        classNames.add("All Classes");
         classNames.addAll(distinctClassNames);
         classNames.removeAll(Collections.singleton(null));
         Collections.sort(classNames);
@@ -382,7 +413,7 @@ public class TeacherViewController extends Dragable implements Initializable
         }
     }
 
-    private Runnable imageThing()
+    private Runnable imageLoader()
     {
         return new Thread(() ->
         {
@@ -421,28 +452,7 @@ public class TeacherViewController extends Dragable implements Initializable
     @FXML
     public void handleLogOut(ActionEvent event) throws IOException
     {
-        gotoLogin("/attendance/gui/view/LoginView.fxml");
-    }
-
-    /**
-     * Set the scene to login-view.
-     *
-     * @param viewPath
-     * @throws IOException
-     */
-    private void gotoLogin(String viewPath) throws IOException
-    {
-        Stage primaryStage = (Stage) lblUsername.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
-        Parent root = loader.load();
-        primaryStage.close();
-
-        Stage newStage = new Stage(StageStyle.UNDECORATED);
-        newStage.setScene(new Scene(root));
-
-        newStage.initOwner(primaryStage);
-
-        newStage.show();
+        vg.loadStage((Stage) txtSearch.getScene().getWindow(), "/attendance/gui/view/LoginView.fxml");
     }
 
     private void calculateAttendingStudents()
@@ -460,6 +470,37 @@ public class TeacherViewController extends Dragable implements Initializable
         }
 
         lblStudentAttendance.setText("" + attendingStudents + "/" + totalStudents);
+    }
+    
+    private void viewStudentsByClass()
+    {
+        comboClass.valueProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> listener, String oldValue, String newValue)
+            {
+                ObservableList<Student> studentsByClassList = FXCollections.observableArrayList();
+                for (Student student : allStudents)
+                {
+                    if (student.getClassName() != null)
+                    {
+                        if (student.getClassName().matches(newValue))
+                        {
+                            studentsByClassList.add(student);
+                        }
+                    }
+                }
+                
+                if (comboClass.getValue().matches("All Classes"))
+                {
+                    tblStudentAbs.setItems(allStudents);
+                }
+                else
+                {
+                    tblStudentAbs.setItems(studentsByClassList);
+                }
+            }
+        });
     }
 
 }

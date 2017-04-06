@@ -20,7 +20,7 @@ public class StudentModel
 
     private Student currentUser;
     private List<Absence> missedClasses;
-    private List<Lecture> lectures;
+    private int month;
 
     private static StudentModel instance;
 
@@ -53,18 +53,6 @@ public class StudentModel
         }
     }
 
-    public List<Lecture> getLectures()
-    {
-        return lectures;
-    }
-
-    public void setLectures(List<Lecture> lectures)
-    {
-        this.lectures = lectures;
-    }
-
-
-
     public Student getCurrentUser()
     {
         return currentUser;
@@ -75,4 +63,13 @@ public class StudentModel
         this.currentUser = currentUser;
     }
 
+    public int getMonth()
+    {
+        return month;
+    }
+    
+    public void setMonth(int month)
+    {
+        this.month = month;
+    }
 }

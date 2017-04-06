@@ -7,6 +7,7 @@ import attendance.gui.model.LoginModel;
 import attendance.gui.model.StudentModel;
 import attendance.gui.model.TeacherModel;
 import attendance.bll.PersonManager;
+import attendance.gui.model.LectureModel;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -40,10 +41,13 @@ public class LoginViewController extends Dragable implements Initializable
     private final PersonManager manager;
     private final StudentModel studentModel;
     private final TeacherModel teacherModel;
+    private final LectureModel lectureModel;
     private LoginModel loginModel;
     private final List<Person> people;
     private final List<Student> students;
     private final List<Teacher> teachers;
+    private ViewGenerator vg;
+
 
     @FXML
     private TextField txtUser;
@@ -60,8 +64,10 @@ public class LoginViewController extends Dragable implements Initializable
 
     public LoginViewController() throws SQLException, IOException
     {
+        this.vg = new ViewGenerator();
         this.studentModel = StudentModel.getInstance();
         this.teacherModel = TeacherModel.getInstance();
+        this.lectureModel = LectureModel.getInstance();
         loginModel = LoginModel.getInstance();
         this.manager = new PersonManager();
         students = manager.getAllStudents();
@@ -138,7 +144,7 @@ public class LoginViewController extends Dragable implements Initializable
                 {
                     studentModel.setCurrentUser((Student) person);
                     studentModel.setMissedClasses(manager.getSingleStudentAbsence(person.getId()));
-                    studentModel.setLectures(manager.getAllLectures());
+                    lectureModel.setLectures(manager.getAllLectures());
                 } else
                 {
                     return;
@@ -152,7 +158,7 @@ public class LoginViewController extends Dragable implements Initializable
                 // A variable to hold the name of the view.
                 String userType = person.getClass().getSimpleName();
 
-                loadStage("/attendance/gui/view/" + userType + "View.fxml");
+                vg.loadStage((Stage) txtUser.getScene().getWindow(), "/attendance/gui/view/" + userType + "View.fxml");
                 return;
             }
         }

@@ -8,20 +8,19 @@ package attendance.gui.controller;
 import attendance.be.Absence;
 import attendance.be.Lecture;
 import attendance.be.Semester;
+import attendance.be.Student;
 import attendance.gui.model.DateTimeModel;
 import attendance.gui.model.StudentModel;
 import attendance.bll.PersonManager;
-import java.io.FileNotFoundException;
+import attendance.gui.model.LectureModel;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import static java.util.Calendar.AM;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -53,9 +52,11 @@ import javafx.stage.StageStyle;
 public class StudentViewController extends Dragable implements Initializable
 {
 
-    private final StudentModel model;
+    private final StudentModel studentModel;
+    private final LectureModel lectureModel;
     private final DateTimeModel dateTimeModel;
     private final PersonManager manager;
+    private final Student currentUser;
 
     @FXML
     private Label lblUser;
@@ -75,8 +76,10 @@ public class StudentViewController extends Dragable implements Initializable
     public StudentViewController() throws SQLException, IOException
     {
         this.manager = new PersonManager();
-        this.model = StudentModel.getInstance();
+        this.studentModel = StudentModel.getInstance();
+        this.lectureModel = LectureModel.getInstance();
         this.dateTimeModel = new DateTimeModel();
+        this.currentUser = studentModel.getCurrentUser();
 
     }
 
@@ -86,13 +89,30 @@ public class StudentViewController extends Dragable implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
-        lblUser.setText(model.getCurrentUser().getFirstName() + " " + model.getCurrentUser().getLastName());
-
-        if (model.getCurrentUser().getLastCheckIn() != null)
+        if (currentUser.getLastCheckIn() != null && currentUser.getLastCheckOut() != null)
         {
-            if (model.getCurrentUser().getLastCheckOut() != null)
+            if (isLastCheckOutWrong())
             {
-                if (model.getCurrentUser().getLastCheckIn().compareTo(model.getCurrentUser().getLastCheckOut()) > 0)
+                editWrongCheckOut();
+            }
+        }
+        giveAbsenceWhenSick();
+        try
+        {
+            studentModel.setMissedClasses(manager.getSingleStudentAbsence(currentUser.getId()));
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        lblUser.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
+
+        if (currentUser.getLastCheckIn() != null)
+        {
+            if (currentUser.getLastCheckOut() != null)
+            {
+                if (currentUser.getLastCheckIn().compareTo(currentUser.getLastCheckOut()) > 0)
                 {
                     checkInStyle(false);
                 }
@@ -104,14 +124,6 @@ public class StudentViewController extends Dragable implements Initializable
         }
         setLogo();
 
-        try
-        {
-            calculateAbsence();
-        }
-        catch (ParseException ex)
-        {
-            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     @FXML
@@ -125,13 +137,14 @@ public class StudentViewController extends Dragable implements Initializable
     {
         if (checkedIn)
         {
-            model.getCurrentUser().setLastCheckIn(Timestamp.valueOf(LocalDateTime.now()));
-            manager.updateCheckIn(model.getCurrentUser());
+            currentUser.setLastCheckIn(Timestamp.valueOf(LocalDateTime.now()));
+            manager.updateCheckIn(currentUser);
         }
         else
         {
-            model.getCurrentUser().setLastCheckOut(Timestamp.valueOf(LocalDateTime.now()));
-            manager.updateCheckOut(model.getCurrentUser());
+            currentUser.setLastCheckOut(Timestamp.valueOf(LocalDateTime.now()));
+            manager.updateCheckOut(currentUser);
+            calculateTodaysAbsence();
         }
     }
 
@@ -154,7 +167,7 @@ public class StudentViewController extends Dragable implements Initializable
         }
         btnCheckIn.setText(btnText);
         btnCheckIn.setStyle(btnStyle);
-        lblUser.setText(model.getCurrentUser().getFirstName() + " " + model.getCurrentUser().getLastName());
+        lblUser.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
     }
 
     @FXML
@@ -189,61 +202,6 @@ public class StudentViewController extends Dragable implements Initializable
         imageLogo.setFitWidth(150);
     }
 
-    private void calculateAbsence() throws ParseException
-    {
-//        int studentId = model.getCurrentUser().getId();
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        String today = sdf.format(new Date());
-//
-//        Calendar lastCIn = Calendar.getInstance();
-//        lastCIn.setTimeInMillis(model.getCurrentUser().getLastCheckIn().getTime());
-//        Calendar lastCOut = Calendar.getInstance();
-//        lastCOut.setTimeInMillis(model.getCurrentUser().getLastCheckOut().getTime());
-//
-//        List<Lecture> todaysLectures = getTodaysLectures();
-//
-//        Calendar firstLectureStart = getSchoolStart(todaysLectures);
-//        Calendar lastLectureEnd = getSchoolEnd(todaysLectures);
-//
-//        if (!lastCIn.after(firstLectureStart) || !lastCOut.after(lastLectureEnd))
-//        {
-//            for (int i = 0; i < todaysLectures.size(); i++)
-//            {
-//                int lectureId = todaysLectures.get(i).getId();
-//                int hour = todaysLectures.get(i).getPeriodStart()[0];
-//                int minute = todaysLectures.get(i).getPeriodStart()[1];
-//
-//                Calendar lectureStart = Calendar.getInstance();
-//                lectureStart.set(Calendar.AM_PM, AM);
-//                lectureStart.set(Calendar.HOUR, hour);
-//                lectureStart.set(Calendar.MINUTE, minute);
-//                lectureStart.set(Calendar.SECOND, 0);
-//                if (lastCIn.after(lectureStart))
-//                {
-//                    for (Absence absence : model.getMissedClasses())
-//                    {
-//                        if (absence.getLectureId() == lectureId && absence.getStudentId() == studentId && absence.getDate().toString().equals(today))
-//                        {
-//                                System.out.println(absence.getId() + " is absence for today");
-//                        }
-//                    }
-////                    Absence absence = new Absence(model.getCurrentUser().getId(), todaysLectures.get(i).getId(), new Date());
-////                    try
-////                    {
-////                        manager.addAbsence(absence);
-////                    }
-////                    catch (SQLException ex)
-////                    {
-////                        Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
-////                    }
-//                }
-//            }
-//            System.out.println("YOU HAVE ABSENCE");
-//        }
-
-    }
-
     private Calendar getSchoolEnd(List<Lecture> todaysLectures)
     {
         Calendar lastLectureEnd = Calendar.getInstance();
@@ -262,9 +220,14 @@ public class StudentViewController extends Dragable implements Initializable
 
     private List<Lecture> getTodaysLectures()
     {
-        Semester semester = new Semester(new Date(), model.getCurrentUser().getClassName());
-        String today = getCurrentDay();
-        List<Lecture> allLectures = model.getLectures();
+        return getADaysLectures(Calendar.getInstance());
+    }
+
+    private List<Lecture> getADaysLectures(Calendar now)
+    {
+        Semester semester = new Semester(new Date(), currentUser.getClassName());
+        String today = getCurrentDay(now);
+        List<Lecture> allLectures = lectureModel.getLectures();
         List<Lecture> todaysLectures = new ArrayList<>();
         for (Lecture lecture : allLectures)
         {
@@ -284,29 +247,24 @@ public class StudentViewController extends Dragable implements Initializable
         return todaysLectures;
     }
 
-    private String getCurrentDay()
+    private String getCurrentDay(Calendar now)
     {
         String today;
-        Calendar now = Calendar.getInstance();
         switch (now.get(Calendar.DAY_OF_WEEK))
         {
             case 2:
                 today = "Monday";
                 break;
             case 3:
-
                 today = "Tuesday";
                 break;
             case 4:
-
                 today = "Wednesday";
                 break;
             case 5:
-
                 today = "Thursday";
                 break;
             case 6:
-
                 today = "Friday";
                 break;
             default:
@@ -316,11 +274,11 @@ public class StudentViewController extends Dragable implements Initializable
         return today;
     }
 
-    
     /**
      * Changes view to login screen, whenever the Log-out button is pressed
+     *
      * @param event
-     * @throws IOException 
+     * @throws IOException
      */
     @FXML
     public void handleLogOut(ActionEvent event) throws IOException
@@ -328,15 +286,15 @@ public class StudentViewController extends Dragable implements Initializable
         goLoginScreen("/attendance/gui/view/LoginView.fxml");
     }
 
-    
-    
     /**
      * Set the scene to login-view.
+     *
      * @param viewPath
-     * @throws IOException 
+     * @throws IOException
      */
-    private void goLoginScreen(String viewPath) throws IOException {
-      Stage primaryStage = (Stage) lblUser.getScene().getWindow();
+    private void goLoginScreen(String viewPath) throws IOException
+    {
+        Stage primaryStage = (Stage) lblUser.getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
         Parent root = loader.load();
         primaryStage.close();
@@ -348,5 +306,141 @@ public class StudentViewController extends Dragable implements Initializable
 
         newStage.show();
     }
-    
+
+    private boolean isLastCheckOutWrong()
+    {
+
+        // Check if forgotten to check out
+        if (currentUser.getLastCheckIn().after(currentUser.getLastCheckOut()))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void editWrongCheckOut()
+    {
+        Calendar calNow, calCI, calCO;
+        calNow = Calendar.getInstance();
+        calCI = Calendar.getInstance();
+        calCO = Calendar.getInstance();
+
+        Timestamp lastCI = currentUser.getLastCheckIn();
+        calCI.setTime(lastCI);
+
+        Timestamp lastCO = currentUser.getLastCheckOut();
+        calCO.setTime(lastCO);
+
+        Calendar newCO = calCI;
+        newCO.set(Calendar.HOUR_OF_DAY, 23);
+        newCO.set(Calendar.MINUTE, 59);
+        Timestamp coMili = new Timestamp(newCO.getTimeInMillis());
+        currentUser.setLastCheckOut(coMili);
+        try
+        {
+            manager.updateCheckOut(currentUser);
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void giveAbsenceWhenSick()
+    {
+        Calendar calNow = Calendar.getInstance();
+        Calendar calCO = Calendar.getInstance();
+        Timestamp lastCO;
+        lastCO = currentUser.getLastCheckOut();
+        calCO.setTime(lastCO);
+        if (calNow.get(Calendar.DAY_OF_YEAR) > calCO.get(Calendar.DAY_OF_YEAR) + 1)
+        {
+            int remainingDays = calNow.get(Calendar.DAY_OF_YEAR) - calCO.get(Calendar.DAY_OF_YEAR);
+            for (int i = 1; i < remainingDays; i++)
+            {
+                Calendar current = calCO;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                current.add(Calendar.DAY_OF_YEAR, 1);
+
+                while (current.get(Calendar.DAY_OF_WEEK) == 7 || current.get(Calendar.DAY_OF_WEEK) == 1)
+                {
+                    current.add(Calendar.DAY_OF_YEAR, 1);
+                    i++;
+                }
+                if (i == remainingDays)
+                {
+                    break;
+                }
+                for (Lecture lecture : getADaysLectures(current))
+                {
+                    if (isAbsenceUnique(lecture, sdf, current))
+                    {
+                        try
+                        {
+                            Absence absence = new Absence(currentUser.getId(), lecture.getId(), current.getTime());
+                            manager.addAbsence(absence);
+                        }
+                        catch (SQLException ex)
+                        {
+                            Logger.getLogger(StudentViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isAbsenceUnique(Lecture lecture, SimpleDateFormat sdf, Calendar current)
+    {
+        boolean isUnique = true;
+        for (Absence abs : studentModel.getMissedClasses())
+        {
+            if (abs.getStudentId() == currentUser.getId() && abs.getLectureId() == lecture.getId() && abs.getDate().toString().equals(sdf.format(current.getTime())))
+            {
+                isUnique = false;
+            }
+        }
+        return isUnique;
+    }
+
+    private void calculateTodaysAbsence() throws SQLException
+    {
+        Timestamp checkIn = currentUser.getLastCheckIn();
+        Timestamp checkOut = currentUser.getLastCheckOut();
+        Calendar schoolStart, schoolEnd, lectStart, lectEnd;
+        schoolStart = getSchoolStart(getTodaysLectures());
+        schoolEnd = getSchoolEnd(getTodaysLectures());
+        lectStart = Calendar.getInstance();
+        lectEnd = Calendar.getInstance();
+        int checkInPeriod = getTodaysLectures().get(0).getPeriod();
+        int checkOutPeriod = getTodaysLectures().get(getTodaysLectures().size() - 1).getPeriod();
+        int firstPeriod = getTodaysLectures().get(0).getPeriod();
+        int lastPeriod = getTodaysLectures().get(getTodaysLectures().size() - 1).getPeriod();
+        for (Lecture lecture : getTodaysLectures())
+        {
+            lectStart.set(Calendar.HOUR_OF_DAY, lecture.getPeriodStart()[0]);
+            lectStart.set(Calendar.MINUTE, lecture.getPeriodStart()[1]);
+            lectEnd.set(Calendar.HOUR_OF_DAY, lecture.getPeriodEnd()[0]);
+            lectEnd.set(Calendar.MINUTE, lecture.getPeriodEnd()[1]);
+            if (checkIn.getTime() > lectStart.getTimeInMillis())
+            {
+                checkInPeriod = lecture.getPeriod();
+                if (checkInPeriod > firstPeriod)
+                {
+                    Absence absence = new Absence(currentUser.getId(), lecture.getId(), new Date());
+                    manager.addAbsence(absence);
+                }
+            }
+            if (checkOut.getTime() < lectEnd.getTimeInMillis())
+            {
+
+                Absence absence = new Absence(currentUser.getId(), lecture.getId(), new Date());
+                manager.addAbsence(absence);
+            }
+        }
+
+    }
+
 }
