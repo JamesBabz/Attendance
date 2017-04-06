@@ -19,7 +19,7 @@
                </font></Button>
             <HBox fx:id="calendarContainer" layoutX="10.0" layoutY="157.0" prefHeight="225.0" prefWidth="212.0" style="-fx-border-color: A9B6C7;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
                <children>
-               <fx:include source="CalendarView.fxml" />
+               <fx:include fx:id="calendarView" source="CalendarView.fxml" />
                </children>
             </HBox>
             <ImageView fx:id="imageLogo" fitHeight="49.0" fitWidth="139.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
@@ -35,7 +35,7 @@
     </AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="461.0" prefWidth="665.0" styleClass="background">
          <children>
-            <fx:include source="PieChartView.fxml" />
+            <fx:include fx:id="pieChartView" source="PieChartView.fxml" />
             <Button fx:id="closeButton" layoutX="351.0" layoutY="15.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="4.0" prefWidth="10.0" styleClass="roundbutton, buttonhoverred, closebuttoncolor" text="x" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
             <Label fx:id="labelProcent" />
             <Hyperlink fx:id="linkLogOut" layoutX="282.0" layoutY="3.0" onAction="#handleLogOut" text="Log-Out" />

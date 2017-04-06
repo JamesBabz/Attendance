@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,7 +45,6 @@ public class PieChartViewController implements Initializable
     private final StudentModel studentModel;
     private final LectureModel lectureModel;
 
-
     List<String> lectureAbsence;
     List<Double> lectureValue;
     private final String[] DifferentClasses;
@@ -54,7 +54,7 @@ public class PieChartViewController implements Initializable
     @FXML
     private PieChart absenceChart;
     @FXML
-    private Label lblProcent;
+    public Label lblProcent;
 
     public PieChartViewController() throws SQLException, IOException
     {
@@ -81,17 +81,15 @@ public class PieChartViewController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+        absenceChart.setData(pieChartData);
         updatePieChart();
 
     }
 
-    private void updatePieChart()
+    public void updatePieChart()
     {
-
         updateLectureAbsence();
-
-        absenceChart.setData(pieChartData);
-
+        
         lblProcent.setTextFill(Color.BLACK);
         lblProcent.setStyle("-fx-font: 18 arial;");
 
@@ -114,29 +112,32 @@ public class PieChartViewController implements Initializable
 
     private void updateLectureAbsence()
     {
+        pieChartData.clear();
+        lectureAbsence.clear();
         List<Lecture> lectures = lectureModel.getLectures();
         List<Absence> missedClasses = studentModel.getMissedClasses();
-
         for (Lecture lecture : lectures)
         {
             for (Absence missedClass : missedClasses)
             {
-                if (lecture.getId() == missedClass.getLectureId())
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(missedClass.getDate());
+                if (cal.get(Calendar.MONTH) == studentModel.getMonth() && cal.get(Calendar.YEAR) == studentModel.getYear() && lecture.getId() == missedClass.getLectureId())
                 {
                     lectureAbsence.add(lecture.getLectureName());
+                    
                 }
             }
-
         }
 
         double[] absence = getAmountOfAbsencePerClass(lectureAbsence);
-
         pieChartData.add(new PieChart.Data("Attendance", getMonthLectures()));
 
         for (int i = 0; i < getDistinct().size(); i++)
         {
             pieChartData.add(new PieChart.Data(getDistinct().get(i), absence[i]));
         }
+        System.out.println(Arrays.toString(pieChartData.toArray()));
 
     }
 
@@ -148,12 +149,13 @@ public class PieChartViewController implements Initializable
         {
             if (Collections.frequency(classNames, name) != 0)
             {
-                txt += Collections.frequency(classNames, name) + "";
+                txt += Collections.frequency(classNames, name) + ",";
             }
         }
+        String[] txtArray = txt.split(",");
         for (int i = 0; i < amount.length; i++)
         {
-            amount[i] = Double.parseDouble(Character.toString(txt.charAt(i)));
+            amount[i] = Double.parseDouble(txtArray[i]);
         }
         return amount;
     }
@@ -221,10 +223,7 @@ public class PieChartViewController implements Initializable
             }
 
         }
-        {
 
-        }
-        System.out.println(lecturesInMonth);
         return lecturesInMonth;
     }
 }
