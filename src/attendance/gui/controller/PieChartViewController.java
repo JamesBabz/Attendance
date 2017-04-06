@@ -57,6 +57,8 @@ public class PieChartViewController implements Initializable
     private PieChart absenceChart;
     @FXML
     public Label lblProcent;
+    @FXML
+    private Label lblMonth;
 
     public PieChartViewController() throws SQLException, IOException
     {
@@ -91,7 +93,7 @@ public class PieChartViewController implements Initializable
     {
 
         updateLectureAbsence();
-        absenceChart.setTitle("Absence in " + getMonth());
+        lblMonth.setText("Absence in " + getMonth());
         GetProcentToPieChart();
     }
     /**
@@ -153,7 +155,7 @@ public class PieChartViewController implements Initializable
     private void GetProcentToPieChart()
     {
         lblProcent.setTextFill(Color.BLACK);
-        lblProcent.setStyle("-fx-font: 18 arial;");
+        lblProcent.setStyle("-fx-font: 16 arial;");
 
         for (final PieChart.Data data : absenceChart.getData())
         {
@@ -166,6 +168,8 @@ public class PieChartViewController implements Initializable
                             -> pieChartData.stream().collect(Collectors.summingDouble(PieChart.Data::getPieValue)), pieChartData);
 
                     String text = String.format("%.1f%%", 100 * data.getPieValue() / total.get());
+                    lblProcent.setTranslateX(e.getX());
+                    lblProcent.setTranslateY(e.getY() -17);
                     lblProcent.setText(text);
                 }
             });
