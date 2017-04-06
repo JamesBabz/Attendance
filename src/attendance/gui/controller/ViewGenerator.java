@@ -21,14 +21,22 @@ public class ViewGenerator
 
     private Stage stage;
 
-    public void loadStage(Stage stage, String viewPath) throws IOException
+    public void loadStage(Stage stage, String viewPath, boolean decorated) throws IOException
     {
         this.stage = stage;
         FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
         Parent root = loader.load();
         stage.close();
-
-        Stage newStage = new Stage(StageStyle.DECORATED);
+        
+        Stage newStage;
+        if (decorated)
+        {
+            newStage = new Stage(StageStyle.DECORATED);
+        }
+        else
+        {
+            newStage = new Stage(StageStyle.UNDECORATED);
+        }
         newStage.setScene(new Scene(root));
 
         newStage.initOwner(stage);
