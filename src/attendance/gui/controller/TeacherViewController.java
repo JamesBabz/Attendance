@@ -24,8 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -71,6 +75,9 @@ public class TeacherViewController extends Dragable implements Initializable
     private final List<Absence> absence;
     private Student selectedStudent;
     private final int IMAGESIZE = 150;
+    private LocalDate firstDate;
+    private LocalDate secondDate;
+    Thread thread;
 
     @FXML
     private Label lblUsername;
@@ -96,19 +103,20 @@ public class TeacherViewController extends Dragable implements Initializable
     private DatePicker dateFirstDate;
     @FXML
     private DatePicker dateSecondDate;
-
-    LocalDate firstDate;
-    LocalDate secondDate;
     @FXML
     private TableColumn<Student, Double> colAbsenceInP;
     @FXML
     private Button logoutBtn;
+    @FXML
+    private Label lblStudentAttendance;
 
     /**
      * The default constructor for the TeacherViewController.
      */
     public TeacherViewController() throws SQLException, IOException
     {
+        this.thread = new Thread(imageThing());
+
         this.manager = new PersonManager();
         this.studentList = manager.getAllStudents();
         this.allStudents = FXCollections.observableArrayList();
@@ -134,7 +142,6 @@ public class TeacherViewController extends Dragable implements Initializable
         colPictures.setMinWidth(IMAGESIZE);
         colPictures.setMaxWidth(IMAGESIZE);
         colPictures.setEditable(false);
-        imageThing();
         addCheckBoxes();
 
         updateDateInfo();
@@ -143,6 +150,8 @@ public class TeacherViewController extends Dragable implements Initializable
         setSemester();
         setClass();
 
+        calculateAttendingStudents();
+        thread.start();
     }
 
     public void getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLException
@@ -182,10 +191,10 @@ public class TeacherViewController extends Dragable implements Initializable
     private void search()
     {
         txtSearch.textProperty().addListener((ObservableValue<? extends String> listener, String oldQuery, String newQuery)
-                -> 
-                {
-                    searchedStudents.setAll(model.search(studentList, newQuery));
-                    tblStudentAbs.setItems(searchedStudents);
+                ->
+        {
+            searchedStudents.setAll(model.search(studentList, newQuery));
+            tblStudentAbs.setItems(searchedStudents);
         });
     }
 
@@ -373,40 +382,41 @@ public class TeacherViewController extends Dragable implements Initializable
         }
     }
 
-    private void imageThing()
+    private Runnable imageThing()
     {
-        int x = 0;
-        for (Student student : studentList)
+        return new Thread(() ->
         {
-            Image image;
-            if (student.getStudentImage() != null)
+            int x = 0;
+            Image studentImage;
+            for (Student student : studentList)
             {
-                image = SwingFXUtils.toFXImage(student.getStudentImage(), null);
-            }
-            else
-            {
-                image = new Image("attendance/gui/view/images/profile-placeholder.png");
+
+                if (student.getStudentImage() != null)
+                {
+                    studentImage = SwingFXUtils.toFXImage(student.getStudentImage(), null);
+                }
+                else
+                {
+                    studentImage = new Image("attendance/gui/view/images/profile-placeholder.png");
+                }
+
+                ImageView imgV = new ImageView(studentImage);
+                imgV.setFitWidth(IMAGESIZE);
+                imgV.setPreserveRatio(true);
+                imgV.setSmooth(true);
+                imgV.setCache(true);
+                student.setProfilePic(imgV);
+                x++;
 
             }
-            ImageView imgV = new ImageView(image);
-            imgV.setFitWidth(IMAGESIZE);
-            imgV.setPreserveRatio(true);
-            imgV.setSmooth(true);
-            imgV.setCache(true);
-            student.setProfilePic(imgV);
-            x++;
-//            if (x >= 20)
-//            {
-//                break;
-//            }
-        }
+        });
     }
-    
- 
-     /**
+
+    /**
      * Changes view to login screen, whenever the Log-out button is pressed
+     *
      * @param event
-     * @throws IOException 
+     * @throws IOException
      */
     @FXML
     public void handleLogOut(ActionEvent event) throws IOException
@@ -414,14 +424,15 @@ public class TeacherViewController extends Dragable implements Initializable
         gotoLogin("/attendance/gui/view/LoginView.fxml");
     }
 
-    
-     /**
+    /**
      * Set the scene to login-view.
+     *
      * @param viewPath
-     * @throws IOException 
+     * @throws IOException
      */
-    private void gotoLogin(String viewPath) throws IOException {
-      Stage primaryStage = (Stage) lblUsername.getScene().getWindow();
+    private void gotoLogin(String viewPath) throws IOException
+    {
+        Stage primaryStage = (Stage) lblUsername.getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
         Parent root = loader.load();
         primaryStage.close();
@@ -432,6 +443,23 @@ public class TeacherViewController extends Dragable implements Initializable
         newStage.initOwner(primaryStage);
 
         newStage.show();
+    }
+
+    private void calculateAttendingStudents()
+    {
+        int totalStudents = studentList.size();
+        int attendingStudents = 0;
+
+        for (Student student : studentList)
+        {
+
+            if (student.isRegistered())
+            {
+                attendingStudents++;
+            }
+        }
+
+        lblStudentAttendance.setText("" + attendingStudents + "/" + totalStudents);
     }
 
 }
