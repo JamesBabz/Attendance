@@ -89,7 +89,7 @@ public class PieChartViewController implements Initializable
     public void updatePieChart()
     {
         updateLectureAbsence();
-
+        
         lblProcent.setTextFill(Color.BLACK);
         lblProcent.setStyle("-fx-font: 18 arial;");
 
@@ -125,6 +125,7 @@ public class PieChartViewController implements Initializable
                 if (cal.get(Calendar.MONTH) == studentModel.getMonth() && cal.get(Calendar.YEAR) == studentModel.getYear() && lecture.getId() == missedClass.getLectureId())
                 {
                     lectureAbsence.add(lecture.getLectureName());
+                    
                 }
             }
         }
@@ -136,6 +137,7 @@ public class PieChartViewController implements Initializable
         {
             pieChartData.add(new PieChart.Data(getDistinct().get(i), absence[i]));
         }
+        System.out.println(Arrays.toString(pieChartData.toArray()));
 
     }
 
@@ -147,12 +149,13 @@ public class PieChartViewController implements Initializable
         {
             if (Collections.frequency(classNames, name) != 0)
             {
-                txt += Collections.frequency(classNames, name) + "";
+                txt += Collections.frequency(classNames, name) + ",";
             }
         }
+        String[] txtArray = txt.split(",");
         for (int i = 0; i < amount.length; i++)
         {
-            amount[i] = Double.parseDouble(Character.toString(txt.charAt(i)));
+            amount[i] = Double.parseDouble(txtArray[i]);
         }
         return amount;
     }
