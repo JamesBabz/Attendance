@@ -139,7 +139,7 @@ public class TeacherViewController extends Dragable implements Initializable
         viewStudentsByClass();
         setClass();
         calculateAttendingStudents();
-
+        
         imageThread.start();
     }
 
@@ -224,10 +224,10 @@ public class TeacherViewController extends Dragable implements Initializable
      */
     private void calculateAttendingStudents()
     {
-        int totalStudents = studentList.size();
+        int totalStudents = tblStudentAbs.getItems().size();
         int attendingStudents = 0;
 
-        for (Student student : studentList)
+        for (Student student : tblStudentAbs.getItems())
         {
             if (student.isRegistered())
             {
@@ -269,6 +269,8 @@ public class TeacherViewController extends Dragable implements Initializable
                 {
                     tblStudentAbs.setItems(studentsByClassList);
                 }
+                calculateAttendingStudents();
+
             }
         });
     }
@@ -429,12 +431,12 @@ public class TeacherViewController extends Dragable implements Initializable
     private void setSemester()
     {
         comboSemester.getItems().addAll(
-                "All Semesters",
+//                "All Semesters",
                 "1. Semester",
                 "2. Semester",
                 "3. Semester",
-                "4. Semester",
-                "5. Semester"
+                "4. Semester"
+//                "5. Semester"
         );
     }
 
