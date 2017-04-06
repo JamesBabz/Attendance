@@ -7,11 +7,9 @@ package attendance.dal;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -31,16 +29,16 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class SaveFileDAO
 {
-
+    String fileName;
     public SaveFileDAO(String fileName)
     {
-
+        this.fileName = fileName;
     }
 
     public void saveLogin(String userName, String passWord) throws IOException
     {
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("LoginData.txt")))
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName)))
         {
             userName = encrypt(userName);
             passWord = encrypt(passWord);
@@ -55,7 +53,7 @@ public class SaveFileDAO
 //        ArrayList<String> userData = new ArrayList<>();
         String[] loadedArray = new String[2];
 
-        try (BufferedReader br = new BufferedReader(new FileReader("LoginData.txt")))
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName)))
         {
             Scanner scanner = new Scanner(br);
             while (scanner.hasNext())
