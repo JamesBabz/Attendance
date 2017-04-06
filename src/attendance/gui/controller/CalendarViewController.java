@@ -22,12 +22,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -41,9 +45,11 @@ import javafx.scene.control.Tooltip;
 public class CalendarViewController implements Initializable
 {
 
+   
     private Calendar cal;
     private int year;
-    private static int  month;
+    private static int month;
+    private static StudentViewController parentContr;
     private final String todayStyle;
     private final String absentStyle;
     private final String attendetStyle;
@@ -57,7 +63,7 @@ public class CalendarViewController implements Initializable
     @FXML
     private GridPane gridCalendar;
     @FXML
-    private ComboBox<String> cmbMonth;
+    public ComboBox<String> cmbMonth;
     @FXML
     private ComboBox<Integer> cmbYear;
 
@@ -97,7 +103,7 @@ public class CalendarViewController implements Initializable
                 year - 3,
                 year - 4
         );
-       
+
     }
 
     /**
@@ -106,7 +112,8 @@ public class CalendarViewController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
-
+        setMonth();
+        setYear();
         fillCalendar();
         cmbMonth.setItems(months);
         cmbMonth.getSelectionModel().select(month);
@@ -236,11 +243,13 @@ public class CalendarViewController implements Initializable
     {
         year = cmbYear.getValue();
         fillCalendar();
+        setYear();
+        parentContr.updatePieChart();
 
     }
 
     @FXML
-    private void changeMonth(ActionEvent event)
+    private void changeMonth(ActionEvent event) throws NoSuchMethodException
     {
         String selected = cmbMonth.getValue();
         for (int i = 0; i < months.size(); i++)
@@ -251,6 +260,9 @@ public class CalendarViewController implements Initializable
             }
         }
         fillCalendar();
+        setMonth();
+        parentContr.updatePieChart();
+
     }
 
     private String getAmountOfAbsencePerClass(List<String> classNames)
@@ -266,9 +278,25 @@ public class CalendarViewController implements Initializable
         }
         return stringToPrint;
     }
-    
+
     public void setMonth()
     {
         studentModel.setMonth(month);
     }
+
+    public void setYear()
+    {
+        studentModel.setYear(year);
+    }
+    
+     static void setParentController(StudentViewController parentContr)
+    {
+        CalendarViewController.parentContr = parentContr;
+    }
+
+    public static StudentViewController getParentContr()
+    {
+        return parentContr;
+    }
+
 }
