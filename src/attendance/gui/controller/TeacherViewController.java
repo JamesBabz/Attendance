@@ -72,7 +72,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private Student selectedStudent;
     private LocalDate firstDate;
     private LocalDate secondDate;
-    private final double totalLectures = 110;
+    private final double totalLectures = 1158;
 
     @FXML
     private Label lblUsername;
