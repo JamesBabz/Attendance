@@ -89,9 +89,12 @@ public class StudentViewController extends Dragable implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
-        if (isLastCheckOutWrong())
+        if (currentUser.getLastCheckIn() != null && currentUser.getLastCheckOut() != null)
         {
-            editWrongCheckOut();
+            if (isLastCheckOutWrong())
+            {
+                editWrongCheckOut();
+            }
         }
         giveAbsenceWhenSick();
         try
@@ -253,19 +256,15 @@ public class StudentViewController extends Dragable implements Initializable
                 today = "Monday";
                 break;
             case 3:
-
                 today = "Tuesday";
                 break;
             case 4:
-
                 today = "Wednesday";
                 break;
             case 5:
-
                 today = "Thursday";
                 break;
             case 6:
-
                 today = "Friday";
                 break;
             default:
