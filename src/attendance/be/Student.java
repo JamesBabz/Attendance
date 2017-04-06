@@ -2,6 +2,7 @@ package attendance.be;
 
 import java.awt.image.BufferedImage;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.List;
@@ -10,7 +11,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.image.ImageView;
 
 /**
- *  This business entity class holds the information about the student and extends Person
+ * This business entity class holds the information about the student and
+ * extends Person
+ *
  * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public class Student extends Person
@@ -25,6 +28,8 @@ public class Student extends Person
     private BufferedImage studentImage;
     private double percentageAbsence = 0;
     private ImageView profilePic;
+    private double absenceInPercent;
+    private String absenceInPercentString;
 
     /**
      * The default constructor for the student class.
@@ -77,7 +82,8 @@ public class Student extends Person
         if (lastCheckIn1 != null && lastCheckout != null)
         {
             this.registered = new SimpleBooleanProperty(lastCheckIn1.after(lastCheckOut));
-        } else
+        }
+        else
         {
             this.registered = new SimpleBooleanProperty(false);
         }
@@ -233,6 +239,33 @@ public class Student extends Person
     public void setProfilePic(ImageView profilePic)
     {
         this.profilePic = profilePic;
+    }
+
+    public void setAbsenceInPercent(double percentAbs)
+    {
+        this.absenceInPercent = percentAbs;
+        setAbsenceInPercentString();
+    }
+
+    private void setAbsenceInPercentString()
+    {
+        String str;
+        DecimalFormat numberFormat;
+        if (absenceInPercent != 0)
+        {
+            numberFormat = new DecimalFormat("#.00");
+            str = numberFormat.format(absenceInPercent);
+        }
+        else
+        {
+            str = absenceInPercent + "";
+        }
+        this.absenceInPercentString = str+"%";
+    }
+
+    public String getAbsenceInPercentString()
+    {
+        return absenceInPercentString;
     }
 
 }
