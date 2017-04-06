@@ -21,6 +21,7 @@ public class StudentModel
     private Student currentUser;
     private List<Absence> missedClasses;
     private int month;
+    private int year;
 
     private static StudentModel instance;
 
@@ -72,4 +73,14 @@ public class StudentModel
     {
         this.month = month;
     }
+    public int getYear()
+    {
+        return year;
+    }
+    
+    public void setYear(int year)
+    {
+        this.year = year;
+    }
+
 }
