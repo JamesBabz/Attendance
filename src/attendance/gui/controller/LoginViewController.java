@@ -192,20 +192,19 @@ public class LoginViewController extends Dragable implements Initializable
         alert.showAndWait();
     }
 
-    private void loadStage(String viewPath) throws IOException
-    {
-        Stage primaryStage = (Stage) txtUser.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
-        Parent root = loader.load();
-        primaryStage.close();
-
-        Stage newStage = new Stage(StageStyle.UNDECORATED);
-        newStage.setScene(new Scene(root));
-
-        newStage.initOwner(primaryStage);
-
-        newStage.show();
-    }
+//    private void loadStage(String viewPath) throws IOException
+//    {
+//        Stage primaryStage = (Stage) txtUser.getScene().getWindow();
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
+//        Parent root = loader.load();
+//        primaryStage.close();
+//
+//        Stage newStage = new Stage(StageStyle.UNDECORATED);
+//        newStage.setScene(new Scene(root));
+//       
+//        newStage.initOwner(primaryStage);
+//        newStage.show();
+//    }
 
     private void setCheckBoxRemember()
     {

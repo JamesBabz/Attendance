@@ -57,6 +57,8 @@ public class PieChartViewController implements Initializable
     private PieChart absenceChart;
     @FXML
     public Label lblProcent;
+    @FXML
+    private Label lblMonth;
 
     public PieChartViewController() throws SQLException, IOException
     {
@@ -91,7 +93,7 @@ public class PieChartViewController implements Initializable
     {
 
         updateLectureAbsence();
-        absenceChart.setTitle("Absence in " + getMonth());
+        lblMonth.setText("Absence in " + getMonth());
         GetProcentToPieChart();
     }
     /**
