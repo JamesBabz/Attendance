@@ -202,45 +202,25 @@ public class StudentViewController extends Dragable implements Initializable
         imageLogo.setFitWidth(150);
     }
 
-    private Calendar getSchoolEndWithTolerance(List<Lecture> todaysLectures)
+    private Calendar getSchoolEnd(List<Lecture> todaysLectures)
     {
         Calendar lastLectureEnd = Calendar.getInstance();
-        lastLectureEnd.set(Calendar.HOUR, todaysLectures.get(todaysLectures.size() - 2).getPeriodStart()[0]);
-        lastLectureEnd.set(Calendar.MINUTE, todaysLectures.get(todaysLectures.size() - 2).getPeriodStart()[1]);
+        lastLectureEnd.set(Calendar.HOUR, todaysLectures.get(todaysLectures.size() - 1).getPeriodStart()[0]);
+        lastLectureEnd.set(Calendar.MINUTE, todaysLectures.get(todaysLectures.size() - 1).getPeriodStart()[1]);
         return lastLectureEnd;
     }
 
-    private Calendar getSchoolStartWithTolerance(List<Lecture> todaysLectures)
+    private Calendar getSchoolStart(List<Lecture> todaysLectures)
     {
         Calendar firstLectureStart = Calendar.getInstance();
-        firstLectureStart.set(Calendar.HOUR, todaysLectures.get(1).getPeriodStart()[0]);
-        firstLectureStart.set(Calendar.MINUTE, todaysLectures.get(1).getPeriodStart()[1]);
+        firstLectureStart.set(Calendar.HOUR, todaysLectures.get(0).getPeriodStart()[0]);
+        firstLectureStart.set(Calendar.MINUTE, todaysLectures.get(0).getPeriodStart()[1]);
         return firstLectureStart;
     }
 
     private List<Lecture> getTodaysLectures()
     {
         return getADaysLectures(Calendar.getInstance());
-//        Semester semester = new Semester(new Date(), currentUser.getClassName());
-//        String today = getCurrentDay(Calendar.getInstance());
-//        List<Lecture> allLectures = model.getLectures();
-//        List<Lecture> todaysLectures = new ArrayList<>();
-//        for (Lecture lecture : allLectures)
-//        {
-//            if (lecture.getDay().equals(today) && lecture.getSemester() == semester.getSemesterNum())
-//            {
-//                todaysLectures.add(lecture);
-//            }
-//        }
-//        Collections.sort(todaysLectures, new Comparator<Lecture>()
-//        {
-//            @Override
-//            public int compare(Lecture t, Lecture t1)
-//            {
-//                return t.getPeriod() - t1.getPeriod();
-//            }
-//        });
-//        return todaysLectures;
     }
 
     private List<Lecture> getADaysLectures(Calendar now)
@@ -425,32 +405,39 @@ public class StudentViewController extends Dragable implements Initializable
         return isUnique;
     }
 
-    private void calculateTodaysAbsence()
+    private void calculateTodaysAbsence() throws SQLException
     {
         Timestamp checkIn = currentUser.getLastCheckIn();
         Timestamp checkOut = currentUser.getLastCheckOut();
         Calendar schoolStart, schoolEnd, lectStart, lectEnd;
-        schoolStart = getSchoolStartWithTolerance(getTodaysLectures());
-        schoolEnd = getSchoolEndWithTolerance(getTodaysLectures());
+        schoolStart = getSchoolStart(getTodaysLectures());
+        schoolEnd = getSchoolEnd(getTodaysLectures());
         lectStart = Calendar.getInstance();
         lectEnd = Calendar.getInstance();
-
-        if (checkIn.getTime() >= schoolStart.getTimeInMillis() || checkOut.getTime() <= schoolEnd.getTimeInMillis())
+        int checkInPeriod = getTodaysLectures().get(0).getPeriod();
+        int checkOutPeriod = getTodaysLectures().get(getTodaysLectures().size() - 1).getPeriod();
+        int firstPeriod = getTodaysLectures().get(0).getPeriod();
+        int lastPeriod = getTodaysLectures().get(getTodaysLectures().size() - 1).getPeriod();
+        for (Lecture lecture : getTodaysLectures())
         {
-//            for (int i = 0; i < getTodaysLectures().size(); i++)
-//            {
-//                getTodaysLectures().get(i).getPeriodStart();
-//            }
-            for (Lecture lecture : getTodaysLectures())
+            lectStart.set(Calendar.HOUR_OF_DAY, lecture.getPeriodStart()[0]);
+            lectStart.set(Calendar.MINUTE, lecture.getPeriodStart()[1]);
+            lectEnd.set(Calendar.HOUR_OF_DAY, lecture.getPeriodEnd()[0]);
+            lectEnd.set(Calendar.MINUTE, lecture.getPeriodEnd()[1]);
+            if (checkIn.getTime() > lectStart.getTimeInMillis())
             {
-                int startHour = lecture.getPeriodStart()[0];
-                int startMin = lecture.getPeriodStart()[1];
-                int endHour = lecture.getPeriodEnd()[0];
-                int endMin = lecture.getPeriodEnd()[1];
-                lectStart.set(Calendar.HOUR, startHour);
-                lectStart.set(Calendar.MINUTE, startMin);
-                lectEnd.set(Calendar.HOUR, endHour);
-                lectEnd.set(Calendar.MINUTE, endMin);
+                checkInPeriod = lecture.getPeriod();
+                if (checkInPeriod > firstPeriod)
+                {
+                    Absence absence = new Absence(currentUser.getId(), lecture.getId(), new Date());
+                    manager.addAbsence(absence);
+                }
+            }
+            if (checkOut.getTime() < lectEnd.getTimeInMillis())
+            {
+
+                Absence absence = new Absence(currentUser.getId(), lecture.getId(), new Date());
+                manager.addAbsence(absence);
             }
         }
 
