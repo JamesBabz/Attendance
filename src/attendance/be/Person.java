@@ -2,9 +2,9 @@ package attendance.be;
 
 import java.io.Serializable;
 
-/**
+/** 
  * The person business entity class. This class holds information about the student.
- * @author James
+ * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public abstract class Person implements Serializable
 {
