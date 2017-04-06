@@ -18,8 +18,9 @@ import javafx.stage.StageStyle;
  */
 public class ViewGenerator
 {
+
     private Stage stage;
-    
+
     public void loadStage(Stage stage, String viewPath) throws IOException
     {
         this.stage = stage;
@@ -39,6 +40,5 @@ public class ViewGenerator
     {
         return stage;
     }
-    
-    
+
 }
