@@ -47,6 +47,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Hyperlink;
 
 /**
  * The controller for the teacher view.
@@ -79,8 +80,6 @@ public class TeacherViewController extends Dragable implements Initializable
     @FXML
     private TableColumn<Student, Boolean> colAbsence;
     @FXML
-    private Button closeButton;
-    @FXML
     private ComboBox<String> comboClass;
     @FXML
     private ComboBox<String> comboSemester;
@@ -97,9 +96,9 @@ public class TeacherViewController extends Dragable implements Initializable
     @FXML
     private TableColumn<Student, Double> colAbsenceInP;
     @FXML
-    private Button logoutBtn;
-    @FXML
     private Label lblStudentAttendance;
+    @FXML
+    private Hyperlink linkLogOut;
 
     /**
      * The default constructor for the TeacherViewController.
@@ -142,14 +141,6 @@ public class TeacherViewController extends Dragable implements Initializable
         calculateAttendingStudents();
 
         imageThread.start();
-    }
-
-    @FXML
-    private void closeWindow(MouseEvent event)
-    {
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
-
     }
 
     @FXML
@@ -198,7 +189,6 @@ public class TeacherViewController extends Dragable implements Initializable
     @FXML
     private void handleSemesterSelect(ActionEvent event)
     {
-
         if (comboClass.getSelectionModel().getSelectedIndex() != -1)
         {
             int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() + 1;
@@ -208,9 +198,7 @@ public class TeacherViewController extends Dragable implements Initializable
             LocalDate secondDate = semester.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             dateFirstDate.setValue(firstDate);
             dateSecondDate.setValue(secondDate);
-
         }
-
     }
 
     @FXML
@@ -228,7 +216,7 @@ public class TeacherViewController extends Dragable implements Initializable
     @FXML
     public void handleLogOut(ActionEvent event) throws IOException
     {
-        vg.loadStage((Stage) txtSearch.getScene().getWindow(), "/attendance/gui/view/LoginView.fxml");
+        vg.loadStage((Stage) txtSearch.getScene().getWindow(), "/attendance/gui/view/LoginView.fxml", false);
     }
 
     /**
@@ -241,7 +229,6 @@ public class TeacherViewController extends Dragable implements Initializable
 
         for (Student student : studentList)
         {
-
             if (student.isRegistered())
             {
                 attendingStudents++;
@@ -388,29 +375,33 @@ public class TeacherViewController extends Dragable implements Initializable
      */
     private Runnable imageLoader()
     {
-        return new Thread(() ->
+        return new Thread(new Runnable()
         {
-            int x = 0;
-            Image studentImage;
-            for (Student student : studentList)
+            @Override
+            public void run()
             {
-
-                if (student.getStudentImage() != null)
+                int x = 0;
+                Image studentImage;
+                for (Student student : studentList)
                 {
-                    studentImage = SwingFXUtils.toFXImage(student.getStudentImage(), null);
-                }
-                else
-                {
-                    studentImage = new Image("attendance/gui/view/images/profile-placeholder.png");
-                }
 
-                ImageView imgV = new ImageView(studentImage);
-                imgV.setFitWidth(IMAGE_SIZE);
-                imgV.setPreserveRatio(true);
-                imgV.setSmooth(true);
-                imgV.setCache(true);
-                student.setProfilePic(imgV);
-                x++;
+                    if (student.getStudentImage() != null)
+                    {
+                        studentImage = SwingFXUtils.toFXImage(student.getStudentImage(), null);
+                    }
+                    else
+                    {
+                        studentImage = new Image("attendance/gui/view/images/profile-placeholder.png");
+                    }
+                    
+                    ImageView imgV = new ImageView(studentImage);
+                    imgV.setFitWidth(IMAGE_SIZE);
+                    imgV.setPreserveRatio(true);
+                    imgV.setSmooth(true);
+                    imgV.setCache(true);
+                    student.setProfilePic(imgV);
+                    x++;
+                }
             }            
         });
     }
@@ -429,7 +420,6 @@ public class TeacherViewController extends Dragable implements Initializable
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Connection to database lost");
-
         }
     }
 
@@ -459,6 +449,7 @@ public class TeacherViewController extends Dragable implements Initializable
         comboClass.setItems(
                 getAllClassNames()
         );
+        
         for (Lecture lecture : lectureModel.getLectures())
         {
             if (TeacherModel.getInstance().getCurrentUser().getId() == lecture.getTeacherId())

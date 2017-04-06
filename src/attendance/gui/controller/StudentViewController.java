@@ -54,9 +54,9 @@ public class StudentViewController extends Dragable implements Initializable
 
     private final StudentModel studentModel;
     private final LectureModel lectureModel;
-    private final DateTimeModel dateTimeModel;
     private final PersonManager manager;
     private final Student currentUser;
+    private final ViewGenerator vg;
 
     @FXML
     private Label lblUser;
@@ -72,13 +72,18 @@ public class StudentViewController extends Dragable implements Initializable
     private HBox calendarContainer;
     @FXML
     private ImageView imageLogo;
-
+    
+    /**
+     * The default constructor for the student view.
+     * @throws SQLException
+     * @throws IOException 
+     */
     public StudentViewController() throws SQLException, IOException
     {
+        this.vg = new ViewGenerator();
         this.manager = new PersonManager();
         this.studentModel = StudentModel.getInstance();
         this.lectureModel = LectureModel.getInstance();
-        this.dateTimeModel = new DateTimeModel();
         this.currentUser = studentModel.getCurrentUser();
 
     }
@@ -123,7 +128,6 @@ public class StudentViewController extends Dragable implements Initializable
             }
         }
         setLogo();
-
     }
 
     @FXML
@@ -131,43 +135,6 @@ public class StudentViewController extends Dragable implements Initializable
     {
         checkInStyle(checkedIn());
         checkInDataHandle(checkedIn());
-    }
-
-    private void checkInDataHandle(boolean checkedIn) throws SQLException
-    {
-        if (checkedIn)
-        {
-            currentUser.setLastCheckIn(Timestamp.valueOf(LocalDateTime.now()));
-            manager.updateCheckIn(currentUser);
-        }
-        else
-        {
-            currentUser.setLastCheckOut(Timestamp.valueOf(LocalDateTime.now()));
-            manager.updateCheckOut(currentUser);
-            calculateTodaysAbsence();
-        }
-    }
-
-    private void checkInStyle(boolean checkedIn)
-    {
-        String btnText;
-        String btnStyle;
-        String loginText = "";
-
-        if (checkedIn)
-        {
-            btnText = "Check-in";
-            btnStyle = "-fx-background-color : LIGHTGREEN;";
-        }
-        else
-        {
-            btnText = "Check-out";
-            btnStyle = "-fx-background-color : #FF0033;";
-            loginText = ", you are now cheked-in";
-        }
-        btnCheckIn.setText(btnText);
-        btnCheckIn.setStyle(btnStyle);
-        lblUser.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
     }
 
     @FXML
@@ -189,91 +156,6 @@ public class StudentViewController extends Dragable implements Initializable
         startDrag(event);
     }
 
-    private boolean checkedIn()
-    {
-        return "Check-out".equals(btnCheckIn.getText());
-    }
-
-    private void setLogo()
-    {
-        Image imageEasv = new Image("attendance/gui/view/images/easv.png");
-        imageLogo.setImage(imageEasv);
-        imageLogo.setFitHeight(80);
-        imageLogo.setFitWidth(150);
-    }
-
-    private Calendar getSchoolEnd(List<Lecture> todaysLectures)
-    {
-        Calendar lastLectureEnd = Calendar.getInstance();
-        lastLectureEnd.set(Calendar.HOUR, todaysLectures.get(todaysLectures.size() - 1).getPeriodStart()[0]);
-        lastLectureEnd.set(Calendar.MINUTE, todaysLectures.get(todaysLectures.size() - 1).getPeriodStart()[1]);
-        return lastLectureEnd;
-    }
-
-    private Calendar getSchoolStart(List<Lecture> todaysLectures)
-    {
-        Calendar firstLectureStart = Calendar.getInstance();
-        firstLectureStart.set(Calendar.HOUR, todaysLectures.get(0).getPeriodStart()[0]);
-        firstLectureStart.set(Calendar.MINUTE, todaysLectures.get(0).getPeriodStart()[1]);
-        return firstLectureStart;
-    }
-
-    private List<Lecture> getTodaysLectures()
-    {
-        return getADaysLectures(Calendar.getInstance());
-    }
-
-    private List<Lecture> getADaysLectures(Calendar now)
-    {
-        Semester semester = new Semester(new Date(), currentUser.getClassName());
-        String today = getCurrentDay(now);
-        List<Lecture> allLectures = lectureModel.getLectures();
-        List<Lecture> todaysLectures = new ArrayList<>();
-        for (Lecture lecture : allLectures)
-        {
-            if (lecture.getDay().equals(today) && lecture.getSemester() == semester.getSemesterNum())
-            {
-                todaysLectures.add(lecture);
-            }
-        }
-        Collections.sort(todaysLectures, new Comparator<Lecture>()
-        {
-            @Override
-            public int compare(Lecture t, Lecture t1)
-            {
-                return t.getPeriod() - t1.getPeriod();
-            }
-        });
-        return todaysLectures;
-    }
-
-    private String getCurrentDay(Calendar now)
-    {
-        String today;
-        switch (now.get(Calendar.DAY_OF_WEEK))
-        {
-            case 2:
-                today = "Monday";
-                break;
-            case 3:
-                today = "Tuesday";
-                break;
-            case 4:
-                today = "Wednesday";
-                break;
-            case 5:
-                today = "Thursday";
-                break;
-            case 6:
-                today = "Friday";
-                break;
-            default:
-                today = "Weekend";
-                break;
-        }
-        return today;
-    }
-
     /**
      * Changes view to login screen, whenever the Log-out button is pressed
      *
@@ -283,33 +165,15 @@ public class StudentViewController extends Dragable implements Initializable
     @FXML
     public void handleLogOut(ActionEvent event) throws IOException
     {
-        goLoginScreen("/attendance/gui/view/LoginView.fxml");
+        vg.loadStage((Stage) btnCheckIn.getScene().getWindow(), "/attendance/gui/view/LoginView.fxml", false);
     }
 
     /**
-     * Set the scene to login-view.
-     *
-     * @param viewPath
-     * @throws IOException
+     * Gets whether the latest check-out is of correct data.
+     * @return whether the wrong.
      */
-    private void goLoginScreen(String viewPath) throws IOException
-    {
-        Stage primaryStage = (Stage) lblUser.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
-        Parent root = loader.load();
-        primaryStage.close();
-
-        Stage newStage = new Stage(StageStyle.UNDECORATED);
-        newStage.setScene(new Scene(root));
-
-        newStage.initOwner(primaryStage);
-
-        newStage.show();
-    }
-
     private boolean isLastCheckOutWrong()
     {
-
         // Check if forgotten to check out
         if (currentUser.getLastCheckIn().after(currentUser.getLastCheckOut()))
         {
@@ -318,6 +182,9 @@ public class StudentViewController extends Dragable implements Initializable
         return false;
     }
 
+    /**
+     * Edits the wrong checkout.
+     */
     private void editWrongCheckOut()
     {
         Calendar calNow, calCI, calCO;
@@ -347,6 +214,9 @@ public class StudentViewController extends Dragable implements Initializable
 
     }
 
+    /**
+     * Gives absence when sick.
+     */
     private void giveAbsenceWhenSick()
     {
         Calendar calNow = Calendar.getInstance();
@@ -392,6 +262,13 @@ public class StudentViewController extends Dragable implements Initializable
         }
     }
 
+    /**
+     * Checks whether or not the absence is unique.
+     * @param lecture The lecture.
+     * @param sdf The simpledateformat to be displayed.
+     * @param current The current calendar.
+     * @return true if unique, false if not.
+     */
     private boolean isAbsenceUnique(Lecture lecture, SimpleDateFormat sdf, Calendar current)
     {
         boolean isUnique = true;
@@ -405,6 +282,10 @@ public class StudentViewController extends Dragable implements Initializable
         return isUnique;
     }
 
+    /**
+     * Calculates the absence of today.
+     * @throws SQLException 
+     */
     private void calculateTodaysAbsence() throws SQLException
     {
         Timestamp checkIn = currentUser.getLastCheckIn();
@@ -440,7 +321,167 @@ public class StudentViewController extends Dragable implements Initializable
                 manager.addAbsence(absence);
             }
         }
+    }
+    
+    /**
+     * Styling the checkin.
+     * @param checkedIn Whether the user is checked in or not.
+     */
+    private void checkInStyle(boolean checkedIn)
+    {
+        String btnText;
+        String btnStyle;
+        String loginText = "";
 
+        if (checkedIn)
+        {
+            btnText = "Check-in";
+            btnStyle = "-fx-background-color : LIGHTGREEN;";
+        }
+        else
+        {
+            btnText = "Check-out";
+            btnStyle = "-fx-background-color : #FF0033;";
+            loginText = ", you are now cheked-in";
+        }
+        btnCheckIn.setText(btnText);
+        btnCheckIn.setStyle(btnStyle);
+        lblUser.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
+    }
+    
+    /**
+     * Gets whether or not the user is checked in.
+     * @return true if checked in, false if not.
+     */
+    private boolean checkedIn()
+    {
+        return "Check-out".equals(btnCheckIn.getText());
     }
 
+    /**
+     * Sets the EASV logo.
+     */
+    private void setLogo()
+    {
+        Image imageEasv = new Image("attendance/gui/view/images/easv.png");
+        imageLogo.setImage(imageEasv);
+        imageLogo.setFitHeight(80);
+        imageLogo.setFitWidth(150);
+    }
+
+    /**
+     * Gets the school end time.
+     * @param todaysLectures
+     * @return 
+     */
+    private Calendar getSchoolEnd(List<Lecture> todaysLectures)
+    {
+        Calendar lastLectureEnd = Calendar.getInstance();
+        lastLectureEnd.set(Calendar.HOUR, todaysLectures.get(todaysLectures.size() - 1).getPeriodStart()[0]);
+        lastLectureEnd.set(Calendar.MINUTE, todaysLectures.get(todaysLectures.size() - 1).getPeriodStart()[1]);
+        return lastLectureEnd;
+    }
+
+    /**
+     * Gets the schools start time.
+     * @param todaysLectures
+     * @return 
+     */
+    private Calendar getSchoolStart(List<Lecture> todaysLectures)
+    {
+        Calendar firstLectureStart = Calendar.getInstance();
+        firstLectureStart.set(Calendar.HOUR, todaysLectures.get(0).getPeriodStart()[0]);
+        firstLectureStart.set(Calendar.MINUTE, todaysLectures.get(0).getPeriodStart()[1]);
+        return firstLectureStart;
+    }
+
+    /**
+     * Gets all the lectures of today.
+     * @return a list representing todays lectures.
+     */
+    private List<Lecture> getTodaysLectures()
+    {
+        return getADaysLectures(Calendar.getInstance());
+    }
+
+    /**
+     * Gets a specific days lecture.
+     * @param now 
+     * @return 
+     */
+    private List<Lecture> getADaysLectures(Calendar now)
+    {
+        Semester semester = new Semester(new Date(), currentUser.getClassName());
+        String today = getCurrentDay(now);
+        List<Lecture> allLectures = lectureModel.getLectures();
+        List<Lecture> todaysLectures = new ArrayList<>();
+        for (Lecture lecture : allLectures)
+        {
+            if (lecture.getDay().equals(today) && lecture.getSemester() == semester.getSemesterNum())
+            {
+                todaysLectures.add(lecture);
+            }
+        }
+        Collections.sort(todaysLectures, new Comparator<Lecture>()
+        {
+            @Override
+            public int compare(Lecture t, Lecture t1)
+            {
+                return t.getPeriod() - t1.getPeriod();
+            }
+        });
+        return todaysLectures;
+    }
+
+    /**
+     * Gets the day today.
+     * @param now
+     * @return 
+     */
+    private String getCurrentDay(Calendar now)
+    {
+        String today;
+        switch (now.get(Calendar.DAY_OF_WEEK))
+        {
+            case 2:
+                today = "Monday";
+                break;
+            case 3:
+                today = "Tuesday";
+                break;
+            case 4:
+                today = "Wednesday";
+                break;
+            case 5:
+                today = "Thursday";
+                break;
+            case 6:
+                today = "Friday";
+                break;
+            default:
+                today = "Weekend";
+                break;
+        }
+        return today;
+    }
+    
+    /**
+     * Handles the check in data
+     * @param checkedIn Whether the user is checked in.
+     * @throws SQLException 
+     */
+    private void checkInDataHandle(boolean checkedIn) throws SQLException
+    {
+        if (checkedIn)
+        {
+            currentUser.setLastCheckIn(Timestamp.valueOf(LocalDateTime.now()));
+            manager.updateCheckIn(currentUser);
+        }
+        else
+        {
+            currentUser.setLastCheckOut(Timestamp.valueOf(LocalDateTime.now()));
+            manager.updateCheckOut(currentUser);
+            calculateTodaysAbsence();
+        }
+    }
 }
