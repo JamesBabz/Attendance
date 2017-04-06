@@ -157,8 +157,16 @@ public class LoginViewController extends Dragable implements Initializable
 
                 // A variable to hold the name of the view.
                 String userType = person.getClass().getSimpleName();
-
-                vg.loadStage((Stage) txtUser.getScene().getWindow(), "/attendance/gui/view/" + userType + "View.fxml");
+                boolean isTeacher;
+                if (userType.equals("Teacher"))
+                {
+                    isTeacher = true;
+                }
+                else
+                {
+                    isTeacher = false;
+                }
+                vg.loadStage((Stage) txtUser.getScene().getWindow(), "/attendance/gui/view/" + userType + "View.fxml", isTeacher);
                 return;
             }
         }
