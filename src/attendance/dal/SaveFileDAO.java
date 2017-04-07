@@ -1,17 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package attendance.dal;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -26,21 +19,31 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- *
- * @author thomas
+ *This class handles the saved the file with Login data.
+ * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public class SaveFileDAO
 {
-
+    String fileName;
+    
+    /**
+     * The contructor.
+     * @param fileName 
+     */
     public SaveFileDAO(String fileName)
     {
-
+        this.fileName = fileName;
     }
-
+/**
+ * Writes the Login data to the txt.file. 
+ * @param userName String, the username to be saved.
+ * @param passWord String, the password to be saved.
+ * @throws IOException 
+ */
     public void saveLogin(String userName, String passWord) throws IOException
     {
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("LoginData.txt")))
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName)))
         {
             userName = encrypt(userName);
             passWord = encrypt(passWord);
@@ -49,13 +52,16 @@ public class SaveFileDAO
 
         }
     }
-
+/**
+ * Reads the login data from the saved file.
+ * @return a String array with the Login data
+ * @throws IOException 
+ */
     public String[] loadLogin() throws IOException
     {
-//        ArrayList<String> userData = new ArrayList<>();
         String[] loadedArray = new String[2];
 
-        try (BufferedReader br = new BufferedReader(new FileReader("LoginData.txt")))
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName)))
         {
             Scanner scanner = new Scanner(br);
             while (scanner.hasNext())
@@ -74,7 +80,11 @@ public class SaveFileDAO
         }
         return loadedArray;
     }
-
+/**
+ * Encrypts the login data.
+ * @param text to be encrypted.
+ * @return the encrypted String.
+ */
     public static String encrypt(String text)
     {
 
@@ -111,7 +121,11 @@ public class SaveFileDAO
         }
         return null;
     }
-
+/**
+ * Decrypts the login data.
+ * @param encryptedString to be decrypted.
+ * @return decrypted login data.
+ */
     public static String decrypt(String encryptedString)
     {
         try

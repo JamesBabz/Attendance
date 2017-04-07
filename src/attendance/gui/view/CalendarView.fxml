@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="AnchorPane" prefHeight="69.0" prefWidth="204.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendance.gui.controller.CalendarViewController">
+<AnchorPane id="AnchorPane" prefHeight="45.0" prefWidth="204.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendance.gui.controller.CalendarViewController">
     <children>
       <GridPane fx:id="gridCalendar" gridLinesVisible="true" layoutX="4.0" layoutY="96.0">
         <columnConstraints>
@@ -34,7 +34,8 @@
             <Label text="Fri" GridPane.columnIndex="4" />
          </children>
       </GridPane>
-      <ComboBox fx:id="cmbYear" layoutX="106.0" layoutY="55.0" onAction="#changeYear" prefHeight="25.0" prefWidth="84.0" />
-      <ComboBox fx:id="cmbMonth" layoutX="14.0" layoutY="55.0" onAction="#changeMonth" prefHeight="25.0" prefWidth="84.0" />
+      <ComboBox fx:id="cmbYear" layoutX="106.0" layoutY="55.0" onAction="#changeYear" prefHeight="25.0" prefWidth="93.0" styleClass="dropdownblue" stylesheets="@css/Style.css" />
+      <ComboBox fx:id="cmbMonth" layoutX="5.0" layoutY="55.0" onAction="#changeMonth" prefHeight="25.0" prefWidth="93.0" styleClass="dropdownblue" stylesheets="@css/Style.css" />
+      <Label layoutX="4.0" layoutY="23.0" text="Missed Classes" />
    </children>
 </AnchorPane>

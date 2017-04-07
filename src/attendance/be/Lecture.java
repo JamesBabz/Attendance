@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package attendance.be;
 
 /**
+ * The class holds the information about the lectures, the students have.
  *
- * @author James
+ * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public class Lecture
 {
@@ -20,6 +16,17 @@ public class Lecture
     int semester;
     int teacherId;
 
+    /**
+     * The contructor for Lecture class.
+     *
+     * @param id the id of the lecture, the student has.
+     * @param lectureName the name of the lecture, the student has.
+     * @param day the day the student has the lecture
+     * @param period the period the student has the lecture on the day
+     * @param className the class that have the lecture
+     * @param semester the semester that lecture belongs
+     * @param teacherId the id of the teacher who has the lecture
+     */
     public Lecture(int id, String lectureName, String day, int period, String className, int semester, int teacherId)
     {
         this.id = id;
@@ -31,41 +38,81 @@ public class Lecture
         this.teacherId = teacherId;
     }
 
+    /**
+     * Gets the id of the lecture.
+     *
+     * @return the id of the lecture
+     */
     public int getId()
     {
         return id;
     }
 
+    /**
+     * Gets the name of the lecture
+     *
+     * @return the name of the lecture
+     */
     public String getLectureName()
     {
         return lectureName;
     }
 
+    /**
+     * Gets the day the student has the lecture
+     *
+     * @return the day
+     */
     public String getDay()
     {
         return day;
     }
 
+    /**
+     * Gets the period the student has the lecture
+     *
+     * @return the period, which is int
+     */
     public int getPeriod()
     {
         return period;
     }
 
+    /**
+     * Gets the name of the cass, which has the lecture
+     *
+     * @return String, the class name
+     */
     public String getClassName()
     {
         return className;
     }
 
+    /**
+     * Gets the semester, where the student has the lecture
+     *
+     * @return int, the semester
+     */
     public int getSemester()
     {
         return semester;
     }
 
+    /**
+     * Gets the id of the tacher, who got that lecture.
+     *
+     * @return int, id of the tacher
+     */
     public int getTeacherId()
     {
         return teacherId;
     }
 
+    /**
+     * Gets the start of the period the student has the lecture on the day
+     *
+     * @return int array, the start of period on the day
+     */
     public int[] getPeriodStart()
     {
         int[] returnArray = new int[2];
@@ -111,6 +158,12 @@ public class Lecture
 
         return returnArray;
     }
+
+    /**
+     * Gets the end of the period the student has the lecture on the day
+     *
+     * @return int array, the end of period on the day
+     */
 
     public int[] getPeriodEnd()
     {

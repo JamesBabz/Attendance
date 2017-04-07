@@ -6,7 +6,6 @@
 package attendance.gui.model;
 
 import attendance.be.Absence;
-import attendance.be.Lecture;
 import attendance.be.Student;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -20,7 +19,8 @@ public class StudentModel
 
     private Student currentUser;
     private List<Absence> missedClasses;
-    private List<Lecture> lectures;
+    private int month;
+    private int year;
 
     private static StudentModel instance;
 
@@ -53,18 +53,6 @@ public class StudentModel
         }
     }
 
-    public List<Lecture> getLectures()
-    {
-        return lectures;
-    }
-
-    public void setLectures(List<Lecture> lectures)
-    {
-        this.lectures = lectures;
-    }
-
-
-
     public Student getCurrentUser()
     {
         return currentUser;
@@ -73,6 +61,26 @@ public class StudentModel
     public void setCurrentUser(Student currentUser)
     {
         this.currentUser = currentUser;
+    }
+
+    public int getMonth()
+    {
+        return month;
+    }
+
+    public void setMonth(int month)
+    {
+        this.month = month;
+    }
+
+    public int getYear()
+    {
+        return year;
+    }
+
+    public void setYear(int year)
+    {
+        this.year = year;
     }
 
 }

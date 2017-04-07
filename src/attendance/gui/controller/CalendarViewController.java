@@ -8,8 +8,12 @@ package attendance.gui.controller;
 import attendance.be.Absence;
 import attendance.be.Lecture;
 import attendance.be.Semester;
+import attendance.bll.PersonManager;
+import attendance.gui.model.LectureModel;
 import attendance.gui.model.StudentModel;
+import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -39,11 +43,14 @@ public class CalendarViewController implements Initializable
 
     private Calendar cal;
     private int year;
-    private int month;
+    private static int month;
+    private static StudentViewController parentContr;
     private final String todayStyle;
     private final String absentStyle;
     private final String attendetStyle;
-    private final StudentModel model;
+    private final StudentModel studentModel;
+    private final LectureModel lectureModel;
+    private final PersonManager manager;
     private final ObservableList<String> months;
     private final ObservableList<Integer> years;
     private final String[] DifferentClasses;
@@ -51,11 +58,11 @@ public class CalendarViewController implements Initializable
     @FXML
     private GridPane gridCalendar;
     @FXML
-    private ComboBox<String> cmbMonth;
+    public ComboBox<String> cmbMonth;
     @FXML
     private ComboBox<Integer> cmbYear;
 
-    public CalendarViewController()
+    public CalendarViewController() throws SQLException, IOException
     {
         this.DifferentClasses = new String[]
         {
@@ -64,7 +71,9 @@ public class CalendarViewController implements Initializable
         this.attendetStyle = "-fx-background-color: lightgreen";
         this.absentStyle = "-fx-background-color: #FF0033";
         this.todayStyle = "-fx-border-color: red;";
-        this.model = StudentModel.getInstance();
+        this.studentModel = StudentModel.getInstance();
+        this.lectureModel = LectureModel.getInstance();
+        this.manager = new PersonManager();
         this.cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"));
         year = cal.get(Calendar.YEAR);
         month = cal.get(Calendar.MONTH);
@@ -98,20 +107,22 @@ public class CalendarViewController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+        setMonth();
+        setYear();
         fillCalendar();
         cmbMonth.setItems(months);
-        cmbMonth.getSelectionModel().select(Calendar.MONTH);
+        cmbMonth.getSelectionModel().select(month);
         cmbYear.setItems(years);
         cmbYear.getSelectionModel().select(0);
     }
 
-    private void fillCalendar()
+    public void fillCalendar()
     {
         gridCalendar.getChildren().remove(5, gridCalendar.getChildren().size()); // Clears everything except the weekdays
         cal.set(year, month, 1); // Sets the month/year for the calendar to show
         String dayOfWeek = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.ENGLISH); // Gets the shortened name for the day
         int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // Gets number of days in the selected month
-        Date firstSemester = new Semester(1, model.getCurrentUser().getClassName()).getStartDate();
+        Date firstSemester = new Semester(1, studentModel.getCurrentUser().getClassName()).getStartDate();
         int gridX = 0;
         int gridY = 1;
         switch (dayOfWeek)
@@ -182,16 +193,11 @@ public class CalendarViewController implements Initializable
 
     private void checkIfAbsent(int i, Label label)
     {
-        List<Absence> missedClasses = model.getMissedClasses();
-        List<Lecture> missedLectures = model.getLectures();
+        List<Absence> missedClasses = studentModel.getMissedClasses();
+        List<Lecture> missedLectures = lectureModel.getLectures();
         List<String> classNames = new ArrayList<>();;
 
-        if (missedClasses.isEmpty())
-        {
-            label.setStyle(attendetStyle);
-
-        }
-        else
+        if (!missedClasses.isEmpty())
         {
             boolean isAbsent = false;
             for (Absence missedClass : missedClasses)
@@ -199,6 +205,7 @@ public class CalendarViewController implements Initializable
                 String stringToPrint;
                 Calendar missCal = Calendar.getInstance();
                 missCal.setTime(missedClass.getDate());
+                //If the current day, i, is equal to a missedClass day set the style to absent
                 if (missCal.get(Calendar.DATE) == i && month == missCal.get(Calendar.MONTH) && year == missCal.get(Calendar.YEAR))
                 {
                     label.setStyle(absentStyle);
@@ -220,18 +227,31 @@ public class CalendarViewController implements Initializable
                 }
             }
         }
+        else
+        {
+            label.setStyle(attendetStyle);
+        }
     }
 
+    /**
+     * Fires when the year is changed in the dropdown
+     */
     @FXML
-    private void changeYear(ActionEvent event)
+    private void changeYear()
     {
         year = cmbYear.getValue();
         fillCalendar();
+        setYear();
+        parentContr.updatePieChart();
 
     }
 
+    /**
+     * Fires when the month is changed in the dropdown
+     * @throws NoSuchMethodException 
+     */
     @FXML
-    private void changeMonth(ActionEvent event)
+    private void changeMonth() throws NoSuchMethodException
     {
         String selected = cmbMonth.getValue();
         for (int i = 0; i < months.size(); i++)
@@ -242,8 +262,16 @@ public class CalendarViewController implements Initializable
             }
         }
         fillCalendar();
+        setMonth();
+        parentContr.updatePieChart();
+
     }
 
+    /**
+     * Gets the class name and amount of the absence current day 
+     * @param classNames - All the class names
+     * @return 
+     */
     private String getAmountOfAbsencePerClass(List<String> classNames)
     {
         String stringToPrint = "";
@@ -257,4 +285,25 @@ public class CalendarViewController implements Initializable
         }
         return stringToPrint;
     }
+
+    public void setMonth()
+    {
+        studentModel.setMonth(month);
+    }
+
+    public void setYear()
+    {
+        studentModel.setYear(year);
+    }
+
+    static void setParentController(StudentViewController parentContr)
+    {
+        CalendarViewController.parentContr = parentContr;
+    }
+
+    public static StudentViewController getParentContr()
+    {
+        return parentContr;
+    }
+
 }

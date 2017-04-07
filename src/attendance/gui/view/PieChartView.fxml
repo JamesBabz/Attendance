@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.*?>
-<?import java.lang.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="398.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendance.gui.controller.PieChartViewController">
+<AnchorPane id="AnchorPane" prefHeight="398.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendance.gui.controller.PieChartViewController">
    <children>
-      <PieChart fx:id="absenceChart" labelLineLength="0.0" labelsVisible="false" layoutX="1.0" layoutY="73.0" legendSide="LEFT" prefHeight="253.0" prefWidth="386.0" />
-      <Text layoutX="141.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total amount of absence">
+      <PieChart fx:id="absenceChart" labelLineLength="0.0" labelsVisible="false" layoutX="1.0" layoutY="140.0" legendSide="LEFT" prefHeight="253.0" prefWidth="386.0" />
+      <Label fx:id="lblProcent" alignment="CENTER" layoutX="213.0" layoutY="267.0" prefHeight="17.0" prefWidth="70.0" />
+      <Label fx:id="lblMonth" alignment="CENTER" layoutX="87.0" layoutY="123.0" prefHeight="17.0" prefWidth="300.0">
          <font>
-            <Font size="18.0" />
+            <Font size="15.0" />
          </font>
-      </Text>
+      </Label>
    </children>
 </AnchorPane>

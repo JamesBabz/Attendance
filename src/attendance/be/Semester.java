@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package attendance.be;
 
 import java.util.Date;
 
 /**
- *
- * @author James
+ * The class holds the information about the semester
+ * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public class Semester
 {
@@ -44,7 +40,9 @@ public class Semester
         setSemesterNum(currentDate);
         setDates();
     }
-
+/**
+ * This method set the start and end of each semester.
+ */
     private void setDates()
     {
         String yearString = className.substring(2, 6);
@@ -81,21 +79,34 @@ public class Semester
         }
     }
 
+    /**
+     * Gets the number of the semester.
+     * @return int, which semester it is
+     */
     public int getSemesterNum()
     {
         return semesterNum;
     }
-
+/**
+ * Gets the start date of the semester
+ * @return date, the start date of the semester
+ */
     public Date getStartDate()
     {
         return startDate;
     }
-
+/**
+ * Gets the end date of the semester
+ * @return date, the end date of the semester
+ */
     public Date getEndDate()
     {
         return endDate;
     }
-
+/**
+ * Sets which semester is it
+ * @param currentDate date, which date is is 
+ */
     private void setSemesterNum(Date currentDate)
     {
         String yearString = className.substring(2, 6);

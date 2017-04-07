@@ -60,3 +60,9 @@ and open the template in the editor.
     -fx-padding: 0 0 0 0;
 }
 
+.center{
+    -fx-alignment: CENTER;
+    -fx-text-alignment: center;
+    -fx-valignment: center;
+}
+

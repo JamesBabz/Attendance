@@ -2,17 +2,19 @@ package attendance.be;
 
 import java.awt.image.BufferedImage;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
+ * This business entity class holds the information about the student and
+ * extends Person
  *
- * @author Jacob Enemark
+ * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public class Student extends Person
 {
@@ -21,11 +23,13 @@ public class Student extends Person
     private int totalAbsence;
     private Timestamp lastCheckIn;
     private Timestamp lastCheckOut;
-    private String fullName;
+    private final String fullName;
     private BooleanProperty registered;
     private BufferedImage studentImage;
     private double percentageAbsence = 0;
     private ImageView profilePic;
+    private double absenceInPercent;
+    private String absenceInPercentString;
 
     /**
      * The default constructor for the student class.
@@ -40,7 +44,7 @@ public class Student extends Person
      * @param className The student's class name, that is the name of the class
      * @param lastCheckIn in which the student participates. e.g. A
      * @param lastCheckout
-     * @param studentImage
+     * @param studentImage the image of the student
      */
     public Student(int id, String firstName, String lastName, String email, String username, String password, String phoneNum, String className, Timestamp lastCheckIn, Timestamp lastCheckout, BufferedImage studentImage)
     {
@@ -85,16 +89,27 @@ public class Student extends Person
         }
     }
 
+    /**
+     * @return if the student is registered or not.
+     */
     public BooleanProperty registeredProperty()
     {
         return registered;
     }
 
+    /**
+     * @return true if the student is registered.
+     */
     public boolean isRegistered()
     {
         return this.registered.get();
     }
 
+    /**
+     * Sets that the student is registered.
+     *
+     * @param value boolean
+     */
     public void setRegistered(boolean value)
     {
         this.registered.set(value);
@@ -141,26 +156,51 @@ public class Student extends Person
         return totalAbsence;
     }
 
+    /**
+     * Gets the last checkin.
+     *
+     * @return timestamp
+     */
     public Timestamp getLastCheckIn()
     {
         return lastCheckIn;
     }
 
+    /**
+     * Sets the last checkin.
+     *
+     * @param lastCheckIn
+     */
     public void setLastCheckIn(Timestamp lastCheckIn)
     {
         this.lastCheckIn = lastCheckIn;
     }
 
+    /**
+     * Gets last checkout.
+     *
+     * @return
+     */
     public Timestamp getLastCheckOut()
     {
         return lastCheckOut;
     }
 
+    /**
+     * Sets last checkout.
+     *
+     * @param lastCheckOut
+     */
     public void setLastCheckOut(Timestamp lastCheckOut)
     {
         this.lastCheckOut = lastCheckOut;
     }
 
+    /**
+     * Gets the student's fullname.
+     *
+     * @return String
+     */
     public String getFullName()
     {
         return fullName;
@@ -173,24 +213,59 @@ public class Student extends Person
 
     public void setPercentageAbsence(LocalDate from, LocalDate to, List<Absence> absence)
     {
-        int x = absence.size()+1;
-        
+        int x = absence.size() + 1;
+
         setTotalAbsence(x);
         long diff = DAYS.between(from, to);
         diff = diff / 7 * 5 * 5;
         this.percentageAbsence = diff / x;
     }
 
+    /**
+     * Gets the image of the student.
+     *
+     * @return image
+     */
     public ImageView getProfilePic()
     {
         return profilePic;
     }
 
+    /**
+     * Sets the image of the student.
+     *
+     * @param profilePic
+     */
     public void setProfilePic(ImageView profilePic)
     {
         this.profilePic = profilePic;
     }
-    
-    
+
+    public void setAbsenceInPercent(double percentAbs)
+    {
+        this.absenceInPercent = percentAbs;
+        setAbsenceInPercentString();
+    }
+
+    private void setAbsenceInPercentString()
+    {
+        String str;
+        DecimalFormat numberFormat;
+        if (absenceInPercent != 0)
+        {
+            numberFormat = new DecimalFormat("#.00");
+            str = numberFormat.format(absenceInPercent);
+        }
+        else
+        {
+            str = absenceInPercent + "";
+        }
+        this.absenceInPercentString = str+"%";
+    }
+
+    public String getAbsenceInPercentString()
+    {
+        return absenceInPercentString;
+    }
 
 }

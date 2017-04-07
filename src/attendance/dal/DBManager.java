@@ -5,7 +5,6 @@ import attendance.be.Lecture;
 import attendance.be.Person;
 import attendance.be.Student;
 import attendance.be.Teacher;
-import attendance.bll.DateTimeManager;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -25,27 +24,44 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 /**
+ * This class handles all the Data from the Database once a connection has been
+ * established.
  *
- * @author James
+ * @author Stephan Fuhlendorff, Jacob Enemark, Simon Birkedal, Thomas Hansen
  */
 public final class DBManager
 {
 
-    ConnectionManager cm;
-    DateTimeManager DTMan;
+    private ConnectionManager cm;
 
-    List<Student> students = new ArrayList<>();
-    List<Teacher> teachers = new ArrayList<>();
-    List<Absence> absences = new ArrayList<>();
-    List<Lecture> lectures = new ArrayList<>();
+    private final List<Student> students;
+    private final List<Teacher> teachers;
+    private final List<Absence> absences;
+    private final List<Lecture> lectures;
 
+    /**
+     * The default constructor for the database manager.
+     *
+     * @throws SQLException
+     * @throws IOException
+     */
     public DBManager() throws SQLException, IOException
     {
+        this.lectures = new ArrayList<>();
+        this.absences = new ArrayList<>();
+        this.teachers = new ArrayList<>();
+        this.students = new ArrayList<>();
         this.cm = new ConnectionManager();
         setAllPeople();
         setAllLectures();
     }
 
+    /**
+     * Sets the data for each person in the database.
+     *
+     * @throws SQLException
+     * @throws IOException
+     */
     public void setAllPeople() throws SQLException, IOException
     {
         String sql = "SELECT * FROM People";
@@ -56,29 +72,29 @@ public final class DBManager
             ResultSet rs = st.executeQuery(sql);
             while (rs.next())
             {
-                int id = rs.getInt(1);
-                String fName = rs.getString(2);
-                String lName = rs.getString(3);
-                String email = rs.getString(4);
-                String user = rs.getString(5);
-                String pass = rs.getString(6);
-                String phoneNum = rs.getString(7);
+                int id = rs.getInt("ID");
+                String fName = rs.getString("FirstName");
+                String lName = rs.getString("LastName");
+                String email = rs.getString("Email");
+                String user = rs.getString("UNILogin");
+                String pass = rs.getString("Password");
+                String phoneNum = rs.getString("PhoneNumber");
                 if (rs.getBoolean("IsStudent"))
                 {
                     Timestamp lastCheckin;
                     Timestamp lastCheckout;
-                    String cName = rs.getString(9);
-                    if (rs.getDate(10) != null)
+                    String cName = rs.getString("Class");
+                    if (rs.getDate("LastCheckedIn") != null)
                     {
-                        lastCheckin = rs.getTimestamp(10);
+                        lastCheckin = rs.getTimestamp("LastCheckedIn");
                     }
                     else
                     {
                         lastCheckin = null;
                     }
-                    if (rs.getDate(11) != null)
+                    if (rs.getDate("LastCheckedOut") != null)
                     {
-                        lastCheckout = rs.getTimestamp(11);
+                        lastCheckout = rs.getTimestamp("LastCheckedOut");
                     }
                     else
                     {
@@ -112,16 +128,31 @@ public final class DBManager
 
     }
 
+    /**
+     * Gets all the students from the database.
+     *
+     * @return a list of all students.
+     */
     public List<Student> getStudents()
     {
         return students;
     }
 
+    /**
+     * Gets all the teachers from the database.
+     *
+     * @return a list of all teachers.
+     */
     public List<Teacher> getTeachers()
     {
         return teachers;
     }
 
+    /**
+     * Gets all people from the database.
+     *
+     * @return a list of all people. (Teachers and students)
+     */
     public List<Person> getPeople()
     {
         ArrayList<Person> people = new ArrayList<>();
@@ -132,6 +163,14 @@ public final class DBManager
         return people;
     }
 
+    /**
+     * Updates the database with a student image represented by binary data.
+     *
+     * @param student The student to update the image for.
+     * @param image The image to be converted to binary data.
+     * @throws IOException
+     * @throws SQLException
+     */
     public void updateStudentImage(Student student, String image) throws IOException, SQLException
     {
         String sql = "UPDATE People SET ImageBinary = ? WHERE ID = ?";
@@ -151,6 +190,13 @@ public final class DBManager
         }
     }
 
+    /**
+     * Updates the database with information about when a student last checked
+     * in.
+     *
+     * @param student The student to update the check-in information about.
+     * @throws SQLException
+     */
     public void updateCheckIn(Student student) throws SQLException
     {
         String sql = "UPDATE People SET LastCheckedIn = ? WHERE ID = ?";
@@ -164,6 +210,13 @@ public final class DBManager
         }
     }
 
+    /**
+     * Updates the database with information about when a student last checked
+     * out.
+     *
+     * @param student The student to update the check-out information about.
+     * @throws SQLException
+     */
     public void updateCheckOut(Student student) throws SQLException
     {
         String sql = "UPDATE People SET LastCheckedOut = ? WHERE ID = ?";
@@ -177,6 +230,12 @@ public final class DBManager
         }
     }
 
+    /**
+     * Get the absence of a student.
+     * @param sID The id of the student.
+     * @return a list of absence of the student specified by the id.
+     * @throws SQLException 
+     */
     public List<Absence> getSingleStudentAbsence(int sID) throws SQLException
     {
         absences.clear();
@@ -188,10 +247,10 @@ public final class DBManager
             ResultSet rs = st.executeQuery(sql);
             while (rs.next())
             {
-                int id = rs.getInt(1);
-                int studentID = rs.getInt(2);
-                int lectureID = rs.getInt(3);
-                Date date = rs.getDate(4);
+                int id = rs.getInt("ID");
+                int studentID = rs.getInt("StudentID");
+                int lectureID = rs.getInt("LectureID");
+                Date date = rs.getDate("Date");
                 Absence absence = new Absence(id, studentID, lectureID, date);
                 absences.add(absence);
             }
@@ -199,8 +258,17 @@ public final class DBManager
         return absences;
     }
 
+    /**
+     * Gets all student absence.
+     * @param startDate The start date.
+     * @param endDate The end date.
+     * @return The summarized absence from start to end date.
+     * @throws SQLServerException
+     * @throws SQLException 
+     */
     public List<Absence> getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLServerException, SQLException
     {
+        absences.clear();
         java.sql.Date sDate = java.sql.Date.valueOf(startDate);
         java.sql.Date eDate = java.sql.Date.valueOf(endDate);
         String sql = "SELECT * FROM Absence WHERE Date >= '" + sDate + "' AND Date <= '" + eDate + "'";
@@ -212,10 +280,10 @@ public final class DBManager
             while (rs.next())
             {
 
-                int id = rs.getInt(1);
-                int studentID = rs.getInt(2);
-                int lectureID = rs.getInt(3);
-                Date date = rs.getDate(4);
+                int id = rs.getInt("ID");
+                int studentID = rs.getInt("StudentID");
+                int lectureID = rs.getInt("LectureID");
+                Date date = rs.getDate("Date");
                 Absence absence = new Absence(id, studentID, lectureID, date);
                 absences.add(absence);
             }
@@ -224,6 +292,10 @@ public final class DBManager
         return absences;
     }
 
+    /**
+     * Sets the lectures for each teacher.
+     * @throws SQLException 
+     */
     public void setAllLectures() throws SQLException
     {
         String sql = "SELECT * FROM Lectures";
@@ -233,40 +305,47 @@ public final class DBManager
             ResultSet rs = st.executeQuery(sql);
             while (rs.next())
             {
-                int id = rs.getInt(1);
-                String lectureName = rs.getString(2);
-                String day = rs.getString(3);
-                int period = rs.getInt(4);
-                String className = rs.getString(5);
-                int semester = rs.getInt(6);
-                int teacherId = rs.getInt(7);
+                int id = rs.getInt("ID");
+                String lectureName = rs.getString("Lecture");
+                String day = rs.getString("Day");
+                int period = rs.getInt("Period");
+                String className = rs.getString("ClassName");
+                int semester = rs.getInt("Semester");
+                int teacherId = rs.getInt("TeacherID");
                 Lecture lecture = new Lecture(id, lectureName, day, period, className, semester, teacherId);
                 lectures.add(lecture);
             }
         }
     }
 
+    /**
+     * Get the lectures for each teacher.
+     * @return a list of lecture.
+     */
     public List<Lecture> getAllLectures()
     {
         return lectures;
     }
 
+    /**
+     * Adds absence.
+     * @param absence
+     * @throws SQLException 
+     */
     public void addAbsence(Absence absence) throws SQLException
     {
-//        String sql = "INSERT INTO Absence VALUES(?, ?, ?, ?)";
-//        int id = 0;
-//            Random rand = new Random();
-//            int shit = rand.nextInt(40);
-//            System.out.println(shit);
-//        try (Connection con = cm.getConnection())
-//        {
-//            PreparedStatement ps = con.prepareStatement(sql);
-//            ps.setInt(1, shit);
-//            ps.setInt(2, absence.getStudentId());
-//            ps.setInt(3, absence.getLectureId());
-//            java.sql.Date sqlDate = new java.sql.Date(absence.getDate().getTime());
-//            ps.setDate(4, sqlDate);
-//            ps.executeQuery();
-//        }
+        String sql = "INSERT INTO Absence (StudentID, LectureID, Date) VALUES(?, ?, ?)";
+        try (Connection con = cm.getConnection())
+        {
+            Statement st = con.createStatement();
+            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, absence.getStudentId());
+            ps.setInt(2, absence.getLectureId());
+            java.sql.Date sqlDate = new java.sql.Date(absence.getDate().getTime());
+            ps.setDate(3, sqlDate);
+
+            ps.executeUpdate();
+        }
+
     }
 }

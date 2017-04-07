@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * This class holds all the information about a students absence.
  *
- * @author James
+ * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public class Absence
 {
@@ -20,7 +20,7 @@ public class Absence
      *
      * @param id The id of the students absence.
      * @param date The date of which the students absence occured.
-     * @param lectureId
+     * @param lectureId The id for the lecture, the is student is absent.
      * @param studentId The id of the student.
      */
     public Absence(int id, int studentId, int lectureId, Date date)
@@ -97,11 +97,19 @@ public Absence(int studentId, int lectureId, Date date)
         this.studentId = studentId;
     }
 
+    /**
+     * Sets id for the lecture, the student is absenct in. 
+     * @param lectureId  The id for the lecture, the is student is absent.
+     */
     public void setLectureId(int lectureId)
     {
         this.lectureId = lectureId;
     }
 
+    /** 
+     * Gets the id for the lecture.
+     * @return the id of the lecture, the student is absence. 
+     */
     public int getLectureId()
     {
         return lectureId;
