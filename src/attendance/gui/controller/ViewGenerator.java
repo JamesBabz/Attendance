@@ -19,15 +19,21 @@ import javafx.stage.StageStyle;
 public class ViewGenerator
 {
 
-    private Stage stage;
-
-    public void loadStage(Stage stage, String viewPath, boolean decorated) throws IOException
+    /**
+     * Loads a new parentStage.
+     *
+     * @param parentStage The parent stage.
+     * @param viewPath The view path, represented by a string.
+     * @param decorated Whether the new stage being loaded should be decorated
+     * or not.
+     * @throws IOException
+     */
+    public void loadStage(Stage parentStage, String viewPath, boolean decorated) throws IOException
     {
-        this.stage = stage;
         FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
         Parent root = loader.load();
-        stage.close();
-        
+        parentStage.close();
+
         Stage newStage;
         if (decorated)
         {
@@ -39,14 +45,8 @@ public class ViewGenerator
         }
         newStage.setScene(new Scene(root));
 
-        newStage.initOwner(stage);
+        newStage.initOwner(parentStage);
 
         newStage.show();
     }
-
-    public Stage getStage()
-    {
-        return stage;
-    }
-
 }

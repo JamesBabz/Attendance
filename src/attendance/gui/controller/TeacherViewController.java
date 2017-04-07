@@ -72,7 +72,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private Student selectedStudent;
     private LocalDate firstDate;
     private LocalDate secondDate;
-    private final double totalLectures = 110;
+    private int totalLectures = 1158;
 
     @FXML
     private Label lblUsername;
@@ -257,7 +257,8 @@ public class TeacherViewController extends Dragable implements Initializable
             @Override
             public void changed(ObservableValue<? extends String> listener, String oldValue, String newValue)
             {
-                for (Student student : allStudents)
+                studentsByClassList.clear();
+                for (Student student : studentList)
                 {
                     if (student.getClassName() != null)
                     {
@@ -520,9 +521,19 @@ public class TeacherViewController extends Dragable implements Initializable
 
     private void calculateAbsenceInPercent()
     {
-        double percentAbs = 0;
         for (Student student : tblStudentAbs.getItems())
         {
+            LocalDate startDate = firstDate;
+            LocalDate endDate = secondDate;
+
+            Calendar startCal, endCal;
+            startCal = Calendar.getInstance();
+            startCal.set(startDate.getYear(), startDate.getMonthValue() - 1, startDate.getDayOfMonth());
+
+            endCal = Calendar.getInstance();
+            endCal.set(endDate.getYear(), endDate.getMonthValue() - 1, endDate.getDayOfMonth());
+
+            double percentAbs = 0;
             int x = 0;
             for (Absence abs : absence)
             {
@@ -532,10 +543,79 @@ public class TeacherViewController extends Dragable implements Initializable
                 }
 
             }
-            percentAbs = (100 / totalLectures) * x;
-            
+
+            calculateTotallecturesInPeriod(startCal, endCal, student);
+            if (totalLectures != 0)
+            {
+                percentAbs = ((double) 100 / (double) totalLectures) * (double) x;
+            }
             student.setAbsenceInPercent(percentAbs);
         }
+        tblStudentAbs.refresh();
+    }
+
+    private void calculateTotallecturesInPeriod(Calendar startCal, Calendar endCal, Student student)
+    {
+
+        totalLectures = 0;
+        String today;
+
+        while (!startCal.after(endCal))
+        {
+            for (Lecture lecture : lectureModel.getLectures()) //Loops through every lecture
+            {
+
+                today = getDayAsString(startCal);
+                if (!"Weekend".equals(today))
+                {
+                    if (lecture.getDay().equals(today))
+                    {
+                        if (student.getClassName().trim().equals(lecture.getClassName().trim()))
+                        {
+                            Semester sem = new Semester(lecture.getSemester(), lecture.getClassName());
+                            if (sem.getStartDate().before(startCal.getTime()) && sem.getEndDate().after(startCal.getTime()))
+                            {
+                                totalLectures++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            startCal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+    }
+
+    private String getDayAsString(Calendar startCal)
+    {
+        String today;
+        switch (startCal.get(Calendar.DAY_OF_WEEK))
+        {
+            case 2:
+                today = "Monday";
+                break;
+            case 3:
+
+                today = "Tuesday";
+                break;
+            case 4:
+
+                today = "Wednesday";
+                break;
+            case 5:
+
+                today = "Thursday";
+                break;
+            case 6:
+
+                today = "Friday";
+                break;
+            default:
+                today = "Weekend";
+                break;
+        }
+        return today;
     }
 
 }
