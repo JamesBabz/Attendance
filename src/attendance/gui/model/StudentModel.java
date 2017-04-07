@@ -6,7 +6,6 @@
 package attendance.gui.model;
 
 import attendance.be.Absence;
-import attendance.be.Lecture;
 import attendance.be.Student;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -68,16 +67,17 @@ public class StudentModel
     {
         return month;
     }
-    
+
     public void setMonth(int month)
     {
         this.month = month;
     }
+
     public int getYear()
     {
         return year;
     }
-    
+
     public void setYear(int year)
     {
         this.year = year;

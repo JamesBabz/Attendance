@@ -15,6 +15,7 @@ public class TeacherModel
     private Teacher currentUser;
     SearchManager searchManager;
 
+//Singleton
     private static TeacherModel instance;
 
     public static TeacherModel getInstance()
@@ -28,7 +29,7 @@ public class TeacherModel
 
     private TeacherModel()
     {
-          searchManager = new  SearchManager();
+        searchManager = new SearchManager();
 
     }
 
@@ -41,11 +42,10 @@ public class TeacherModel
     {
         this.currentUser = currentUser;
     }
-    
- 
+
     public List search(List<Student> students, String searchQuery)
     {
-       return  searchManager.search(students, searchQuery);
+        return searchManager.search(students, searchQuery);
     }
 
 }

@@ -27,7 +27,7 @@ public class ViewGenerator
         FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
         Parent root = loader.load();
         stage.close();
-        
+
         Stage newStage;
         if (decorated)
         {

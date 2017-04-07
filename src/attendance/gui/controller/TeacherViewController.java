@@ -43,7 +43,6 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.scene.control.Alert;
@@ -54,7 +53,7 @@ import javafx.scene.control.Hyperlink;
  *
  * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
-public class TeacherViewController extends Dragable implements Initializable
+public class TeacherViewController implements Initializable
 {
 
     private static final int IMAGE_SIZE = 150;
@@ -148,18 +147,9 @@ public class TeacherViewController extends Dragable implements Initializable
         imageThread.start();
     }
 
-    @FXML
-    private void setOffset(MouseEvent event)
-    {
-        startDrag(event);
-    }
-
-    @FXML
-    private void drag(MouseEvent event)
-    {
-        dragging(event, txtSearch);
-    }
-
+    /**
+     * Changes a students absence when clicked
+     */
     @FXML
     private void changeStudentAbsence()
     {
@@ -191,8 +181,11 @@ public class TeacherViewController extends Dragable implements Initializable
         }
     }
 
+    /**
+     * Fires when semester is selected
+     */
     @FXML
-    private void handleSemesterSelect(ActionEvent event)
+    private void handleSemesterSelect()
     {
 
         if (comboClass.getSelectionModel().getSelectedIndex() != -1 && !"Overall".equals(comboSemester.getValue()))
@@ -517,6 +510,9 @@ public class TeacherViewController extends Dragable implements Initializable
         }
     }
 
+    /**
+     * Gets the absence in percent for a period selected
+     */
     private void calculateAbsenceInPercent()
     {
         for (Student student : studentList)
@@ -552,6 +548,12 @@ public class TeacherViewController extends Dragable implements Initializable
         tblStudentAbs.refresh();
     }
 
+    /**
+     * Calculates how many total lectures are in a given period
+     * @param startCal - Starting date
+     * @param endCal - Ending date
+     * @param student - The student for which the total is being calculated
+     */
     private void calculateTotallecturesInPeriod(Calendar startCal, Calendar endCal, Student student)
     {
 
@@ -585,10 +587,15 @@ public class TeacherViewController extends Dragable implements Initializable
 
     }
 
-    private String getDayAsString(Calendar startCal)
+    /**
+     * Gets the day in a string based on given int
+     * @param cal Calendar with the day
+     * @return 
+     */
+    private String getDayAsString(Calendar cal)
     {
         String today;
-        switch (startCal.get(Calendar.DAY_OF_WEEK))
+        switch (cal.get(Calendar.DAY_OF_WEEK))
         {
             case 2:
                 today = "Monday";
@@ -616,6 +623,9 @@ public class TeacherViewController extends Dragable implements Initializable
         return today;
     }
 
+    /**
+     * Fires when the today button gets pressed
+     */
     @FXML
     private void setToday()
     {

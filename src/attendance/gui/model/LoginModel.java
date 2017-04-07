@@ -5,15 +5,9 @@
  */
 package attendance.gui.model;
 
-import attendance.be.Person;
 import attendance.bll.SaveFileManager;
 import attendance.dal.SaveFileDAO;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  *
@@ -21,13 +15,13 @@ import javafx.collections.ObservableList;
  */
 public class LoginModel
 {
+
     private SaveFileManager saveFileManager;
     private SaveFileDAO saveFileDAO;
-    
 
-    
     private static LoginModel instance;
-        public static LoginModel getInstance()
+
+    public static LoginModel getInstance()
     {
         if (instance == null)
         {
@@ -42,17 +36,17 @@ public class LoginModel
         saveFileDAO = new SaveFileDAO("LoginData.txt");
 
     }
-    
-        public String[] loadLoginData() throws IOException 
+
+    public String[] loadLoginData() throws IOException
     {
-       return saveFileManager.loadLoginData();
+        return saveFileManager.loadLoginData();
 
     }
 
-    public void saveLoginData(String userName, String passWord) throws IOException 
+    public void saveLoginData(String userName, String passWord) throws IOException
     {
         saveFileManager.saveLoginData(userName, passWord);
-        
+
     }
-        
+
 }
