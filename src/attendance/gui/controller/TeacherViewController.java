@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
@@ -196,7 +195,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private void handleSemesterSelect(ActionEvent event)
     {
 
-        if (comboClass.getSelectionModel().getSelectedIndex() != -1)
+        if (comboClass.getSelectionModel().getSelectedIndex() != -1 && !"Overall".equals(comboSemester.getValue()))
         {
             int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() + 1;
             Semester semester = new Semester(semesterNum, comboClass.getValue());
@@ -310,7 +309,7 @@ public class TeacherViewController extends Dragable implements Initializable
             @Override
             public void changed(ObservableValue<? extends String> listener, String oldQuery, String newQuery)
             {
-                searchedStudents.setAll(model.search(studentList, newQuery));
+                searchedStudents.setAll(model.search(tblStudentAbs.getItems(), newQuery));
                 tblStudentAbs.setItems(searchedStudents);
             }
         });
@@ -350,7 +349,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private void setFirstDate()
     {
         firstDate = dateFirstDate.getValue();
-        if (dateSecondDate.getValue() != null)
+        if (dateSecondDate.getValue() != null && firstDate != null)
         {
             try
             {
@@ -369,7 +368,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private void setSecondDate()
     {
         secondDate = dateSecondDate.getValue();
-        if (dateFirstDate.getValue() != null)
+        if (dateFirstDate.getValue() != null && secondDate != null)
         {
             try
             {
@@ -444,12 +443,11 @@ public class TeacherViewController extends Dragable implements Initializable
     private void setSemester()
     {
         comboSemester.getItems().addAll(
-                //                "All Semesters",
                 "1. Semester",
                 "2. Semester",
                 "3. Semester",
-                "4. Semester"
-        //                "5. Semester"
+                "4. Semester",
+                "5. Semester"
         );
     }
 
@@ -521,7 +519,7 @@ public class TeacherViewController extends Dragable implements Initializable
 
     private void calculateAbsenceInPercent()
     {
-        for (Student student : tblStudentAbs.getItems())
+        for (Student student : studentList)
         {
             LocalDate startDate = firstDate;
             LocalDate endDate = secondDate;
@@ -616,6 +614,23 @@ public class TeacherViewController extends Dragable implements Initializable
                 break;
         }
         return today;
+    }
+
+    @FXML
+    private void setToday()
+    {
+        if (dateFirstDate.getValue() != null)
+        {
+            dateFirstDate.setValue(null);
+        }
+        if (dateSecondDate.getValue() != null)
+        {
+            dateSecondDate.setValue(null);
+        }
+        comboSemester.setValue("Overall");
+        colAbsence.setVisible(true);
+        colAbsenceInP.setVisible(false);
+
     }
 
 }
