@@ -268,6 +268,7 @@ public final class DBManager
      */
     public List<Absence> getAllAbsence(LocalDate startDate, LocalDate endDate) throws SQLServerException, SQLException
     {
+        absences.clear();
         java.sql.Date sDate = java.sql.Date.valueOf(startDate);
         java.sql.Date eDate = java.sql.Date.valueOf(endDate);
         String sql = "SELECT * FROM Absence WHERE Date >= '" + sDate + "' AND Date <= '" + eDate + "'";
