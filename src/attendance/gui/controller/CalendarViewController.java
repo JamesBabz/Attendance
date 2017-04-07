@@ -22,16 +22,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -45,7 +41,6 @@ import javafx.scene.control.Tooltip;
 public class CalendarViewController implements Initializable
 {
 
-   
     private Calendar cal;
     private int year;
     private static int month;
@@ -202,12 +197,7 @@ public class CalendarViewController implements Initializable
         List<Lecture> missedLectures = lectureModel.getLectures();
         List<String> classNames = new ArrayList<>();;
 
-        if (missedClasses.isEmpty())
-        {
-            label.setStyle(attendetStyle);
-
-        }
-        else
+        if (!missedClasses.isEmpty())
         {
             boolean isAbsent = false;
             for (Absence missedClass : missedClasses)
@@ -215,6 +205,7 @@ public class CalendarViewController implements Initializable
                 String stringToPrint;
                 Calendar missCal = Calendar.getInstance();
                 missCal.setTime(missedClass.getDate());
+                //If the current day, i, is equal to a missedClass day set the style to absent
                 if (missCal.get(Calendar.DATE) == i && month == missCal.get(Calendar.MONTH) && year == missCal.get(Calendar.YEAR))
                 {
                     label.setStyle(absentStyle);
@@ -236,10 +227,17 @@ public class CalendarViewController implements Initializable
                 }
             }
         }
+        else
+        {
+            label.setStyle(attendetStyle);
+        }
     }
 
+    /**
+     * Fires when the year is changed in the dropdown
+     */
     @FXML
-    private void changeYear(ActionEvent event)
+    private void changeYear()
     {
         year = cmbYear.getValue();
         fillCalendar();
@@ -248,8 +246,12 @@ public class CalendarViewController implements Initializable
 
     }
 
+    /**
+     * Fires when the month is changed in the dropdown
+     * @throws NoSuchMethodException 
+     */
     @FXML
-    private void changeMonth(ActionEvent event) throws NoSuchMethodException
+    private void changeMonth() throws NoSuchMethodException
     {
         String selected = cmbMonth.getValue();
         for (int i = 0; i < months.size(); i++)
@@ -265,6 +267,11 @@ public class CalendarViewController implements Initializable
 
     }
 
+    /**
+     * Gets the class name and amount of the absence current day 
+     * @param classNames - All the class names
+     * @return 
+     */
     private String getAmountOfAbsencePerClass(List<String> classNames)
     {
         String stringToPrint = "";
@@ -288,8 +295,8 @@ public class CalendarViewController implements Initializable
     {
         studentModel.setYear(year);
     }
-    
-     static void setParentController(StudentViewController parentContr)
+
+    static void setParentController(StudentViewController parentContr)
     {
         CalendarViewController.parentContr = parentContr;
     }

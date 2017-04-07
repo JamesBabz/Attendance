@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
@@ -89,10 +88,14 @@ public class PieChartViewController implements Initializable
 
     }
 
+    /**
+     * Updates the piechart and holds the listener for the absence % when clicked
+     */
     public void updatePieChart()
     {
 
         updateLectureAbsence();
+
         lblMonth.setText("Absence in " + getMonth());
         GetProcentToPieChart();
     }
@@ -176,6 +179,9 @@ public class PieChartViewController implements Initializable
         }
     }
 
+    /**
+     * Updates the data in the piechart when a month/year is selected
+     */
     private void updateLectureAbsence()
     {
         pieChartData.clear();
@@ -206,6 +212,11 @@ public class PieChartViewController implements Initializable
 
     }
 
+    /**
+     * Gets the class name and amount of the absence current month 
+     * @param classNames - All the class names
+     * @return 
+     */
     private double[] getAmountOfAbsencePerClass(List<String> classNames)
     {
         double[] amount = new double[getDistinct().size()];
@@ -225,6 +236,10 @@ public class PieChartViewController implements Initializable
         return amount;
     }
 
+    /**
+     * Gets amount of distinct lectures
+     * @return  - distinct lectures
+     */
     private ArrayList<String> getDistinct()
     {
         ArrayList<String> returnArray = new ArrayList<>();
@@ -239,7 +254,7 @@ public class PieChartViewController implements Initializable
     /**
      * Get lectuers of each month
      *
-     * @return
+     * @return - amount of lectures
      */
     private int getMonthLectures()
     {
