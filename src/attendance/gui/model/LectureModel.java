@@ -9,6 +9,7 @@ import attendance.be.Lecture;
 import attendance.bll.PersonManager;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,7 @@ public class LectureModel
 {
     
     private List<Lecture> lectures;
+    private List<Lecture> lecturesInPeriod;
     
     private static LectureModel instance;
     private PersonManager personManager;
@@ -56,4 +58,5 @@ public class LectureModel
     {
         this.lectures = lectures;
     }
+   
 }

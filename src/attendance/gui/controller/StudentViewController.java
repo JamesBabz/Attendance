@@ -71,11 +71,20 @@ public class StudentViewController extends Dragable implements Initializable
     private HBox calendarContainer;
     @FXML
     private ImageView imageLogo;
-    
+    @FXML
+    private Parent pieChartView;
+    @FXML
+    private PieChartViewController pieChartViewController;
+    @FXML
+    private Parent calendarView;
+    @FXML
+    private CalendarViewController calendarViewController;
+
     /**
      * The default constructor for the student view.
+     *
      * @throws SQLException
-     * @throws IOException 
+     * @throws IOException
      */
     public StudentViewController() throws SQLException, IOException
     {
@@ -84,7 +93,7 @@ public class StudentViewController extends Dragable implements Initializable
         this.studentModel = StudentModel.getInstance();
         this.lectureModel = LectureModel.getInstance();
         this.currentUser = studentModel.getCurrentUser();
-
+        CalendarViewController.setParentController(this);
     }
 
     /**
@@ -127,6 +136,7 @@ public class StudentViewController extends Dragable implements Initializable
             }
         }
         setLogo();
+
     }
 
     @FXML
@@ -169,6 +179,7 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Gets whether the latest check-out is of correct data.
+     *
      * @return whether the wrong.
      */
     private boolean isLastCheckOutWrong()
@@ -263,6 +274,7 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Checks whether or not the absence is unique.
+     *
      * @param lecture The lecture.
      * @param sdf The simpledateformat to be displayed.
      * @param current The current calendar.
@@ -283,7 +295,8 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Calculates the absence of today.
-     * @throws SQLException 
+     *
+     * @throws SQLException
      */
     private void calculateTodaysAbsence() throws SQLException
     {
@@ -321,9 +334,10 @@ public class StudentViewController extends Dragable implements Initializable
             }
         }
     }
-    
+
     /**
      * Styling the checkin.
+     *
      * @param checkedIn Whether the user is checked in or not.
      */
     private void checkInStyle(boolean checkedIn)
@@ -347,9 +361,10 @@ public class StudentViewController extends Dragable implements Initializable
         btnCheckIn.setStyle(btnStyle);
         lblUser.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
     }
-    
+
     /**
      * Gets whether or not the user is checked in.
+     *
      * @return true if checked in, false if not.
      */
     private boolean checkedIn()
@@ -370,8 +385,9 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Gets the school end time.
+     *
      * @param todaysLectures
-     * @return 
+     * @return
      */
     private Calendar getSchoolEnd(List<Lecture> todaysLectures)
     {
@@ -383,8 +399,9 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Gets the schools start time.
+     *
      * @param todaysLectures
-     * @return 
+     * @return
      */
     private Calendar getSchoolStart(List<Lecture> todaysLectures)
     {
@@ -396,6 +413,7 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Gets all the lectures of today.
+     *
      * @return a list representing todays lectures.
      */
     private List<Lecture> getTodaysLectures()
@@ -405,8 +423,9 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Gets a specific days lecture.
-     * @param now 
-     * @return 
+     *
+     * @param now
+     * @return
      */
     private List<Lecture> getADaysLectures(Calendar now)
     {
@@ -434,8 +453,9 @@ public class StudentViewController extends Dragable implements Initializable
 
     /**
      * Gets the day today.
+     *
      * @param now
-     * @return 
+     * @return
      */
     private String getCurrentDay(Calendar now)
     {
@@ -463,11 +483,12 @@ public class StudentViewController extends Dragable implements Initializable
         }
         return today;
     }
-    
+
     /**
      * Handles the check in data
+     *
      * @param checkedIn Whether the user is checked in.
-     * @throws SQLException 
+     * @throws SQLException
      */
     private void checkInDataHandle(boolean checkedIn) throws SQLException
     {
@@ -482,5 +503,11 @@ public class StudentViewController extends Dragable implements Initializable
             manager.updateCheckOut(currentUser);
             calculateTodaysAbsence();
         }
+    }
+
+    public void updatePieChart()
+    {
+        pieChartViewController.updatePieChart();
+        pieChartViewController.lblProcent.setText("");
     }
 }

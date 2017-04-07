@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,6 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -57,7 +57,7 @@ import javafx.scene.control.Hyperlink;
 public class TeacherViewController extends Dragable implements Initializable
 {
 
-    private static final int IMAGE_SIZE = 150;
+    private static final int IMAGE_SIZE = 80;
     private final TeacherModel model;
     private final PersonManager manager;
     private final Thread imageThread;
@@ -66,10 +66,12 @@ public class TeacherViewController extends Dragable implements Initializable
     private final List<Student> studentList;
     private final ObservableList<Student> allStudents;
     private final ObservableList<Student> searchedStudents;
+    private final ObservableList<Student> studentsByClassList;
     private final List<Absence> absence;
     private Student selectedStudent;
     private LocalDate firstDate;
     private LocalDate secondDate;
+    private int totalLectures = 1158;
 
     @FXML
     private Label lblUsername;
@@ -105,6 +107,7 @@ public class TeacherViewController extends Dragable implements Initializable
      */
     public TeacherViewController() throws SQLException, IOException
     {
+        this.studentsByClassList = FXCollections.observableArrayList();
         this.lectureModel = LectureModel.getInstance();
         this.imageThread = new Thread(imageLoader());
         this.vg = new ViewGenerator();
@@ -115,6 +118,7 @@ public class TeacherViewController extends Dragable implements Initializable
         this.model = TeacherModel.getInstance();
         allStudents.addAll(studentList);
         absence = new ArrayList<>();
+
     }
 
     /**
@@ -126,11 +130,12 @@ public class TeacherViewController extends Dragable implements Initializable
         lblUsername.setText(model.getCurrentUser().getFirstName() + " " + model.getCurrentUser().getLastName());
         tblStudentAbs.setItems(allStudents);
         colStudent.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-        colAbsenceInP.setCellValueFactory(new PropertyValueFactory<>("PercentageAbsence"));
+        colAbsenceInP.setCellValueFactory(new PropertyValueFactory<>("absenceInPercentString"));
         colPictures.setCellValueFactory(new PropertyValueFactory<>("profilePic"));
         colPictures.setMinWidth(IMAGE_SIZE);
         colPictures.setMaxWidth(IMAGE_SIZE);
         colPictures.setEditable(false);
+        comboSemester.setDisable(true);
 
         addCheckBoxes();
         search();
@@ -139,7 +144,7 @@ public class TeacherViewController extends Dragable implements Initializable
         viewStudentsByClass();
         setClass();
         calculateAttendingStudents();
-        
+
         imageThread.start();
     }
 
@@ -189,7 +194,8 @@ public class TeacherViewController extends Dragable implements Initializable
     @FXML
     private void handleSemesterSelect(ActionEvent event)
     {
-        if (comboClass.getSelectionModel().getSelectedIndex() != -1)
+
+        if (comboClass.getSelectionModel().getSelectedIndex() != -1 && !"Overall".equals(comboSemester.getValue()))
         {
             int semesterNum = comboSemester.getSelectionModel().getSelectedIndex() + 1;
             Semester semester = new Semester(semesterNum, comboClass.getValue());
@@ -199,6 +205,7 @@ public class TeacherViewController extends Dragable implements Initializable
             dateFirstDate.setValue(firstDate);
             dateSecondDate.setValue(secondDate);
         }
+
     }
 
     @FXML
@@ -235,7 +242,7 @@ public class TeacherViewController extends Dragable implements Initializable
             }
         }
 
-        lblStudentAttendance.setText("" + attendingStudents + "/" + totalStudents);
+        lblStudentAttendance.setText("Students present: " + attendingStudents + "/" + totalStudents);
     }
 
     /**
@@ -249,8 +256,8 @@ public class TeacherViewController extends Dragable implements Initializable
             @Override
             public void changed(ObservableValue<? extends String> listener, String oldValue, String newValue)
             {
-                ObservableList<Student> studentsByClassList = FXCollections.observableArrayList();
-                for (Student student : allStudents)
+                studentsByClassList.clear();
+                for (Student student : studentList)
                 {
                     if (student.getClassName() != null)
                     {
@@ -286,6 +293,9 @@ public class TeacherViewController extends Dragable implements Initializable
     {
         absence.clear();
         absence.addAll(manager.getAllAbsence(startDate, endDate));
+        calculateAbsenceInPercent();
+        colAbsence.setVisible(false);
+        colAbsenceInP.setVisible(true);
     }
 
     /**
@@ -299,7 +309,7 @@ public class TeacherViewController extends Dragable implements Initializable
             @Override
             public void changed(ObservableValue<? extends String> listener, String oldQuery, String newQuery)
             {
-                searchedStudents.setAll(model.search(studentList, newQuery));
+                searchedStudents.setAll(model.search(tblStudentAbs.getItems(), newQuery));
                 tblStudentAbs.setItems(searchedStudents);
             }
         });
@@ -339,7 +349,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private void setFirstDate()
     {
         firstDate = dateFirstDate.getValue();
-        if (dateSecondDate.getValue() != null)
+        if (dateSecondDate.getValue() != null && firstDate != null)
         {
             try
             {
@@ -358,7 +368,7 @@ public class TeacherViewController extends Dragable implements Initializable
     private void setSecondDate()
     {
         secondDate = dateSecondDate.getValue();
-        if (dateFirstDate.getValue() != null)
+        if (dateFirstDate.getValue() != null && secondDate != null)
         {
             try
             {
@@ -373,7 +383,9 @@ public class TeacherViewController extends Dragable implements Initializable
 
     /**
      * Loads an image for column in the student table view.
-     * @return A runnable method that can be run simultaneously with the main thread.
+     *
+     * @return A runnable method that can be run simultaneously with the main
+     * thread.
      */
     private Runnable imageLoader()
     {
@@ -395,7 +407,7 @@ public class TeacherViewController extends Dragable implements Initializable
                     {
                         studentImage = new Image("attendance/gui/view/images/profile-placeholder.png");
                     }
-                    
+
                     ImageView imgV = new ImageView(studentImage);
                     imgV.setFitWidth(IMAGE_SIZE);
                     imgV.setPreserveRatio(true);
@@ -404,7 +416,7 @@ public class TeacherViewController extends Dragable implements Initializable
                     student.setProfilePic(imgV);
                     x++;
                 }
-            }            
+            }
         });
     }
 
@@ -431,27 +443,25 @@ public class TeacherViewController extends Dragable implements Initializable
     private void setSemester()
     {
         comboSemester.getItems().addAll(
-//                "All Semesters",
                 "1. Semester",
                 "2. Semester",
                 "3. Semester",
-                "4. Semester"
-//                "5. Semester"
+                "4. Semester",
+                "5. Semester"
         );
     }
 
     /**
-     * Sets the class the teacher is currently attending.
-     * If the teacher is not attending any class at the given moment,
-     * the default value 'All Classes' is selected. This represents all students
-     * for all classes.
+     * Sets the class the teacher is currently attending. If the teacher is not
+     * attending any class at the given moment, the default value 'All Classes'
+     * is selected. This represents all students for all classes.
      */
     private void setClass()
     {
         comboClass.setItems(
                 getAllClassNames()
         );
-        
+
         for (Lecture lecture : lectureModel.getLectures())
         {
             if (TeacherModel.getInstance().getCurrentUser().getId() == lecture.getTeacherId())
@@ -471,11 +481,13 @@ public class TeacherViewController extends Dragable implements Initializable
 
     /**
      * Gets all class names.
+     *
      * @return All class names.
      */
     private ObservableList<String> getAllClassNames()
     {
         ObservableList<String> classNames = FXCollections.observableArrayList();
+
         for (Student student : studentList)
         {
             if (student.getClassName() != null && !student.getClassName().contains("_")) // Just cheating to prevent unavailable classes to be displayed.
@@ -491,5 +503,134 @@ public class TeacherViewController extends Dragable implements Initializable
         classNames.removeAll(Collections.singleton(null));
         Collections.sort(classNames);
         return classNames;
+
     }
+
+    @FXML
+    private void setSemesterEditable()
+    {
+        comboSemester.setDisable(false);
+
+        if (comboClass.getItems().get(0).equals(comboClass.getValue()))
+        {
+            comboSemester.setDisable(true);
+        }
+    }
+
+    private void calculateAbsenceInPercent()
+    {
+        for (Student student : studentList)
+        {
+            LocalDate startDate = firstDate;
+            LocalDate endDate = secondDate;
+
+            Calendar startCal, endCal;
+            startCal = Calendar.getInstance();
+            startCal.set(startDate.getYear(), startDate.getMonthValue() - 1, startDate.getDayOfMonth());
+
+            endCal = Calendar.getInstance();
+            endCal.set(endDate.getYear(), endDate.getMonthValue() - 1, endDate.getDayOfMonth());
+
+            double percentAbs = 0;
+            int x = 0;
+            for (Absence abs : absence)
+            {
+                if (abs.getStudentId() == student.getId())
+                {
+                    x++;
+                }
+
+            }
+
+            calculateTotallecturesInPeriod(startCal, endCal, student);
+            if (totalLectures != 0)
+            {
+                percentAbs = ((double) 100 / (double) totalLectures) * (double) x;
+            }
+            student.setAbsenceInPercent(percentAbs);
+        }
+        tblStudentAbs.refresh();
+    }
+
+    private void calculateTotallecturesInPeriod(Calendar startCal, Calendar endCal, Student student)
+    {
+
+        totalLectures = 0;
+        String today;
+
+        while (!startCal.after(endCal))
+        {
+            for (Lecture lecture : lectureModel.getLectures()) //Loops through every lecture
+            {
+
+                today = getDayAsString(startCal);
+                if (!"Weekend".equals(today))
+                {
+                    if (lecture.getDay().equals(today))
+                    {
+                        if (student.getClassName().trim().equals(lecture.getClassName().trim()))
+                        {
+                            Semester sem = new Semester(lecture.getSemester(), lecture.getClassName());
+                            if (sem.getStartDate().before(startCal.getTime()) && sem.getEndDate().after(startCal.getTime()))
+                            {
+                                totalLectures++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            startCal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+    }
+
+    private String getDayAsString(Calendar startCal)
+    {
+        String today;
+        switch (startCal.get(Calendar.DAY_OF_WEEK))
+        {
+            case 2:
+                today = "Monday";
+                break;
+            case 3:
+
+                today = "Tuesday";
+                break;
+            case 4:
+
+                today = "Wednesday";
+                break;
+            case 5:
+
+                today = "Thursday";
+                break;
+            case 6:
+
+                today = "Friday";
+                break;
+            default:
+                today = "Weekend";
+                break;
+        }
+        return today;
+    }
+
+    @FXML
+    private void setToday()
+    {
+        if (dateFirstDate.getValue() != null)
+        {
+            dateFirstDate.setValue(null);
+        }
+        if (dateSecondDate.getValue() != null)
+        {
+            dateSecondDate.setValue(null);
+        }
+        comboSemester.setValue("Overall");
+        colAbsence.setVisible(true);
+        colAbsenceInP.setVisible(false);
+
+    }
+
 }
