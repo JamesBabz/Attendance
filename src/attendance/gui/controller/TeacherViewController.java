@@ -56,7 +56,7 @@ import javafx.scene.control.Hyperlink;
 public class TeacherViewController implements Initializable
 {
 
-    private static final int IMAGE_SIZE = 150;
+    private static final int IMAGE_SIZE = 80;
     private final TeacherModel model;
     private final PersonManager manager;
     private final Thread imageThread;
@@ -235,7 +235,7 @@ public class TeacherViewController implements Initializable
             }
         }
 
-        lblStudentAttendance.setText("" + attendingStudents + "/" + totalStudents);
+        lblStudentAttendance.setText("Students present: " + attendingStudents + "/" + totalStudents);
     }
 
     /**

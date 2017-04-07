@@ -196,6 +196,7 @@ public class LoginViewController extends Dragable implements Initializable
     /**
      * Set the checkbox if data was loaded
      */
+
     private void setCheckBoxRemember()
     {
         if (txtPass.getText().isEmpty())
