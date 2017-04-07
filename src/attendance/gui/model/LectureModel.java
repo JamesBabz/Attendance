@@ -58,13 +58,5 @@ public class LectureModel
     {
         this.lectures = lectures;
     }
-    
-    public List<Lecture> getLecturesInPeriod(LocalDate startDate, LocalDate endDate)
-    {
-        for (Lecture lecture : lectures)
-        {
-          
-        }
-        return lectures;
-    }
+   
 }
