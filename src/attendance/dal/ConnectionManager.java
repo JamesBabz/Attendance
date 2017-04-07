@@ -13,8 +13,8 @@ import java.sql.Connection;
 import java.util.Properties;
 
 /**
- *
- * @author James
+ *Handles the connection to database.
+ * @author Simon Birkedal, Stephan Fuhlendorff, Thomas Hansen & Jacob Enemark
  */
 public class ConnectionManager
 {
@@ -22,12 +22,15 @@ public class ConnectionManager
     //Connects to the DB specified in the config file
     private static final String DB_CONFIG_FILE = "DBConfig.cfg";
     private final SQLServerDataSource ds;
-
+/**
+ * Contructor.
+ * @throws IOException 
+ */
     public ConnectionManager() throws IOException
     {
         Properties props = new Properties();
         props.load(new FileReader(DB_CONFIG_FILE));
-
+        // Sets the information to database.
         ds = new SQLServerDataSource();
         ds.setServerName(props.getProperty("SERVER"));
         ds.setDatabaseName(props.getProperty("DATABASE"));
@@ -35,7 +38,11 @@ public class ConnectionManager
         ds.setUser(props.getProperty("USER"));
         ds.setPassword(props.getProperty("PASSWORD"));
     }
-
+/**
+ * Gets the connection with database.
+ * @return
+ * @throws SQLServerException 
+ */
     public Connection getConnection() throws SQLServerException
     {
         return ds.getConnection();

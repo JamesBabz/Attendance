@@ -13,10 +13,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -44,7 +47,6 @@ public class PieChartViewController implements Initializable
     private final StudentModel studentModel;
     private final LectureModel lectureModel;
 
-
     List<String> lectureAbsence;
     List<Double> lectureValue;
     private final String[] DifferentClasses;
@@ -54,7 +56,9 @@ public class PieChartViewController implements Initializable
     @FXML
     private PieChart absenceChart;
     @FXML
-    private Label lblProcent;
+    public Label lblProcent;
+    @FXML
+    private Label lblMonth;
 
     public PieChartViewController() throws SQLException, IOException
     {
@@ -63,7 +67,6 @@ public class PieChartViewController implements Initializable
         this.studentModel = StudentModel.getInstance();
         this.lectureModel = LectureModel.getInstance();
         this.data = FXCollections.observableArrayList();
-//        this.absences = manager.getAllAbsence(model.getCurrentUser().getId());
 
         lectureAbsence = new ArrayList<>();
         lectureValue = new ArrayList<>();
@@ -81,19 +84,78 @@ public class PieChartViewController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+        absenceChart.setData(pieChartData);
         updatePieChart();
 
     }
 
-    private void updatePieChart()
+    public void updatePieChart()
     {
 
         updateLectureAbsence();
+        lblMonth.setText("Absence in " + getMonth());
+        GetProcentToPieChart();
+    }
+    /**
+     * Gets the month to be shown in the title of the pie chart.
+     * @return the month that has been selected
+     */
+    private String getMonth()
+    {
+        String month = "";
+        switch (studentModel.getMonth())
+        {
+            case 0:
+                month = "January";
+                break;
+            case 1:
+                month = "Febuary";
+                break;
+            case 2:
+                month = "March";
+                break;
+            case 3:
+                month = "April";
+                break;
+            case 4:
+                month = "May";
+                break;
+            case 5:
+                month = "June";
+                break;
+            case 6:
+                month = "July";
+                break;
+            case 7:
+                month = "August";
+                break;
+            case 8:
+                month = "September";
+                break;
+            case 9:
+                month = "October";
+                break;
+            case 10:
+                month = "November";
+                break;
+            case 11:
+                month = "December";
+                break;
+            default:
+                break;
+        }
+   
+        return month;
+    }
 
-        absenceChart.setData(pieChartData);
 
+/**
+ * Shows the procent when the pie chart is being clicked.
+ */
+    private void GetProcentToPieChart()
+    {
         lblProcent.setTextFill(Color.BLACK);
-        lblProcent.setStyle("-fx-font: 18 arial;");
+        lblProcent.setStyle("-fx-font: 16 arial;");
 
         for (final PieChart.Data data : absenceChart.getData())
         {
@@ -106,6 +168,8 @@ public class PieChartViewController implements Initializable
                             -> pieChartData.stream().collect(Collectors.summingDouble(PieChart.Data::getPieValue)), pieChartData);
 
                     String text = String.format("%.1f%%", 100 * data.getPieValue() / total.get());
+                    lblProcent.setTranslateX(e.getX());
+                    lblProcent.setTranslateY(e.getY() -17);
                     lblProcent.setText(text);
                 }
             });
@@ -114,28 +178,30 @@ public class PieChartViewController implements Initializable
 
     private void updateLectureAbsence()
     {
+        pieChartData.clear();
+        lectureAbsence.clear();
         List<Lecture> lectures = lectureModel.getLectures();
         List<Absence> missedClasses = studentModel.getMissedClasses();
-
         for (Lecture lecture : lectures)
         {
             for (Absence missedClass : missedClasses)
             {
-                if (lecture.getId() == missedClass.getLectureId())
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(missedClass.getDate());
+                if (cal.get(Calendar.MONTH) == studentModel.getMonth() && cal.get(Calendar.YEAR) == studentModel.getYear() && lecture.getId() == missedClass.getLectureId())
                 {
                     lectureAbsence.add(lecture.getLectureName());
+
                 }
             }
-
         }
 
         double[] absence = getAmountOfAbsencePerClass(lectureAbsence);
-
         pieChartData.add(new PieChart.Data("Attendance", getMonthLectures()));
 
         for (int i = 0; i < getDistinct().size(); i++)
         {
-            pieChartData.add(new PieChart.Data(getDistinct().get(i), absence[i]));
+            pieChartData.add(new PieChart.Data(getDistinct().get(i) + " Absence", absence[i]));
         }
 
     }
@@ -148,12 +214,13 @@ public class PieChartViewController implements Initializable
         {
             if (Collections.frequency(classNames, name) != 0)
             {
-                txt += Collections.frequency(classNames, name) + "";
+                txt += Collections.frequency(classNames, name) + ",";
             }
         }
+        String[] txtArray = txt.split(",");
         for (int i = 0; i < amount.length; i++)
         {
-            amount[i] = Double.parseDouble(Character.toString(txt.charAt(i)));
+            amount[i] = Double.parseDouble(txtArray[i]);
         }
         return amount;
     }
@@ -221,10 +288,7 @@ public class PieChartViewController implements Initializable
             }
 
         }
-        {
 
-        }
-        System.out.println(lecturesInMonth);
         return lecturesInMonth;
     }
 }
