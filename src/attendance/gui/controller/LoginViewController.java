@@ -48,7 +48,6 @@ public class LoginViewController extends Dragable implements Initializable
     private final List<Teacher> teachers;
     private ViewGenerator vg;
 
-
     @FXML
     private TextField txtUser;
     @FXML
@@ -93,14 +92,14 @@ public class LoginViewController extends Dragable implements Initializable
     @FXML
     private void handleLogin() throws SQLException, IOException
     {
-//        try
-//        {
-            checkLoginInformation(txtUser.getText(), txtPass.getText());
-//        } catch (IOException ex)
-//        {
-//            showErrorDialog("I/O Error", "", "We couldn't get access to the "
-//                    + "requested data!");
-//        }
+        try
+        {
+        checkLoginInformation(txtUser.getText(), txtPass.getText());
+        } catch (IOException ex)
+        {
+            showErrorDialog("I/O Error", "", "We couldn't get access to the "
+                    + "requested data!");
+        }
     }
 
     @FXML
@@ -140,12 +139,14 @@ public class LoginViewController extends Dragable implements Initializable
                 if (person instanceof Teacher)
                 {
                     teacherModel.setCurrentUser((Teacher) person);
-                } else if (person instanceof Student)
+                }
+                else if (person instanceof Student)
                 {
                     studentModel.setCurrentUser((Student) person);
                     studentModel.setMissedClasses(manager.getSingleStudentAbsence(person.getId()));
                     lectureModel.setLectures(manager.getAllLectures());
-                } else
+                }
+                else
                 {
                     return;
                 }
@@ -192,31 +193,25 @@ public class LoginViewController extends Dragable implements Initializable
         alert.showAndWait();
     }
 
-//    private void loadStage(String viewPath) throws IOException
-//    {
-//        Stage primaryStage = (Stage) txtUser.getScene().getWindow();
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
-//        Parent root = loader.load();
-//        primaryStage.close();
-//
-//        Stage newStage = new Stage(StageStyle.UNDECORATED);
-//        newStage.setScene(new Scene(root));
-//       
-//        newStage.initOwner(primaryStage);
-//        newStage.show();
-//    }
+    /**
+     * Set the checkbox if data was loaded
+     */
 
     private void setCheckBoxRemember()
     {
         if (txtPass.getText().isEmpty())
         {
             checkBoxRemember.setSelected(false);
-        } else
+        }
+        else
         {
             checkBoxRemember.setSelected(true);
         }
     }
 
+    /**
+     * Loads user data from file
+     */
     private void loadUserLogin()
     {
         String username = "";
@@ -226,7 +221,8 @@ public class LoginViewController extends Dragable implements Initializable
             loginModel.loadLoginData();
             username = loginModel.loadLoginData()[0];
             password = loginModel.loadLoginData()[1];
-        } catch (IOException ex)
+        }
+        catch (IOException ex)
         {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setAlertType(AlertType.ERROR);
@@ -242,6 +238,9 @@ public class LoginViewController extends Dragable implements Initializable
         }
     }
 
+    /**
+     * Clears the user data if the checkbox is not checked
+     */
     private void clearUserLogin()
     {
         if (!checkBoxRemember.isPressed())
@@ -249,8 +248,9 @@ public class LoginViewController extends Dragable implements Initializable
             try
             {
                 loginModel.saveLoginData("", "");
-                
-            } catch (IOException ex)
+
+            }
+            catch (IOException ex)
             {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setAlertType(AlertType.ERROR);
@@ -259,6 +259,9 @@ public class LoginViewController extends Dragable implements Initializable
         }
     }
 
+    /**
+     * Set the logo
+     */
     private void setLogo()
     {
         Image imageEasv = new Image("attendance/gui/view/images/easv.png");
