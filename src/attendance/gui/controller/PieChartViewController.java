@@ -137,7 +137,6 @@ public class PieChartViewController implements Initializable
         {
             pieChartData.add(new PieChart.Data(getDistinct().get(i), absence[i]));
         }
-        System.out.println(Arrays.toString(pieChartData.toArray()));
 
     }
 
