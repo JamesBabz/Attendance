@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -55,6 +57,8 @@ public class PieChartViewController implements Initializable
     private PieChart absenceChart;
     @FXML
     public Label lblProcent;
+    @FXML
+    private Label lblMonth;
 
     public PieChartViewController() throws SQLException, IOException
     {
@@ -63,7 +67,6 @@ public class PieChartViewController implements Initializable
         this.studentModel = StudentModel.getInstance();
         this.lectureModel = LectureModel.getInstance();
         this.data = FXCollections.observableArrayList();
-//        this.absences = manager.getAllAbsence(model.getCurrentUser().getId());
 
         lectureAbsence = new ArrayList<>();
         lectureValue = new ArrayList<>();
@@ -88,10 +91,71 @@ public class PieChartViewController implements Initializable
 
     public void updatePieChart()
     {
+
         updateLectureAbsence();
-        
+        lblMonth.setText("Absence in " + getMonth());
+        GetProcentToPieChart();
+    }
+    /**
+     * Gets the month to be shown in the title of the pie chart.
+     * @return the month that has been selected
+     */
+    private String getMonth()
+    {
+        String month = "";
+        switch (studentModel.getMonth())
+        {
+            case 0:
+                month = "January";
+                break;
+            case 1:
+                month = "Febuary";
+                break;
+            case 2:
+                month = "March";
+                break;
+            case 3:
+                month = "April";
+                break;
+            case 4:
+                month = "May";
+                break;
+            case 5:
+                month = "June";
+                break;
+            case 6:
+                month = "July";
+                break;
+            case 7:
+                month = "August";
+                break;
+            case 8:
+                month = "September";
+                break;
+            case 9:
+                month = "October";
+                break;
+            case 10:
+                month = "November";
+                break;
+            case 11:
+                month = "December";
+                break;
+            default:
+                break;
+        }
+   
+        return month;
+    }
+
+
+/**
+ * Shows the procent when the pie chart is being clicked.
+ */
+    private void GetProcentToPieChart()
+    {
         lblProcent.setTextFill(Color.BLACK);
-        lblProcent.setStyle("-fx-font: 18 arial;");
+        lblProcent.setStyle("-fx-font: 16 arial;");
 
         for (final PieChart.Data data : absenceChart.getData())
         {
@@ -104,6 +168,8 @@ public class PieChartViewController implements Initializable
                             -> pieChartData.stream().collect(Collectors.summingDouble(PieChart.Data::getPieValue)), pieChartData);
 
                     String text = String.format("%.1f%%", 100 * data.getPieValue() / total.get());
+                    lblProcent.setTranslateX(e.getX());
+                    lblProcent.setTranslateY(e.getY() -17);
                     lblProcent.setText(text);
                 }
             });
@@ -125,7 +191,7 @@ public class PieChartViewController implements Initializable
                 if (cal.get(Calendar.MONTH) == studentModel.getMonth() && cal.get(Calendar.YEAR) == studentModel.getYear() && lecture.getId() == missedClass.getLectureId())
                 {
                     lectureAbsence.add(lecture.getLectureName());
-                    
+
                 }
             }
         }
@@ -135,7 +201,7 @@ public class PieChartViewController implements Initializable
 
         for (int i = 0; i < getDistinct().size(); i++)
         {
-            pieChartData.add(new PieChart.Data(getDistinct().get(i), absence[i]));
+            pieChartData.add(new PieChart.Data(getDistinct().get(i) + " Absence", absence[i]));
         }
 
     }

@@ -4,16 +4,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane id="AnchorPane" prefHeight="398.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="attendance.gui.controller.PieChartViewController">
    <children>
       <PieChart fx:id="absenceChart" labelLineLength="0.0" labelsVisible="false" layoutX="1.0" layoutY="140.0" legendSide="LEFT" prefHeight="253.0" prefWidth="386.0" />
-      <Text layoutX="141.0" layoutY="131.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total amount of absence">
+      <Label fx:id="lblProcent" alignment="CENTER" layoutX="213.0" layoutY="267.0" prefHeight="17.0" prefWidth="70.0" />
+      <Label fx:id="lblMonth" alignment="CENTER" layoutX="87.0" layoutY="123.0" prefHeight="17.0" prefWidth="300.0">
          <font>
-            <Font size="18.0" />
+            <Font size="15.0" />
          </font>
-      </Text>
-      <Label fx:id="lblProcent" alignment="CENTER" layoutX="210.0" layoutY="258.0" prefHeight="17.0" prefWidth="59.0" />
+      </Label>
    </children>
 </AnchorPane>
