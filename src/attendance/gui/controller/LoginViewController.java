@@ -93,14 +93,14 @@ public class LoginViewController extends Dragable implements Initializable
     @FXML
     private void handleLogin() throws SQLException, IOException
     {
-//        try
-//        {
+        try
+        {
             checkLoginInformation(txtUser.getText(), txtPass.getText());
-//        } catch (IOException ex)
-//        {
-//            showErrorDialog("I/O Error", "", "We couldn't get access to the "
-//                    + "requested data!");
-//        }
+        } catch (IOException ex)
+        {
+            showErrorDialog("I/O Error", "", "We couldn't get access to the "
+                    + "requested data!");
+        }
     }
 
     @FXML

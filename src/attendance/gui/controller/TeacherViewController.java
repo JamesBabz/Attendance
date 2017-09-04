@@ -578,6 +578,7 @@ public class TeacherViewController extends Dragable implements Initializable
                         }
                     }
                 }
+           
             }
 
             startCal.add(Calendar.DAY_OF_MONTH, 1);
